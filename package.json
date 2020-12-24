@@ -17,6 +17,7 @@
     "date-fns": "^2.16.1",
     "emoji-mart": "^3.0.0",
     "js-cookie": "^2.2.0",
+    "jss-rtl": "^0.3.0",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
     "react-cropper": "^2.1.4",

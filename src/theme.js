@@ -25,7 +25,11 @@ const xs = 0;
 const spacing = 8;
 
 const theme = createMuiTheme({
+
+  direction: 'rtl',
+
   palette: {
+
     primary: { main: primary },
     secondary: { main: secondary },
     common: {
@@ -120,7 +124,10 @@ const theme = createMuiTheme({
     }
   },
   typography: {
-    useNextVariants: true
+    useNextVariants: true,
+    fontFamily: [
+      'IRANSans'
+    ].join(','),
   }
 });
 
