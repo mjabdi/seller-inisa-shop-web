@@ -12,23 +12,24 @@ const LoggedOutComponent = lazy(() => import("./logged_out/components/Main"));
 
 function App() {
   return (
-    <BrowserRouter>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <GlobalStyles />
-        <Pace color={theme.palette.primary.light} />
-        <Suspense fallback={<Fragment />}>
-          <Switch>
-            <Route path="/c">
-              <LoggedInComponent />
-            </Route>
-            <Route>
-              <LoggedOutComponent />
-            </Route>
-          </Switch>
-        </Suspense>
-      </MuiThemeProvider>
-    </BrowserRouter>
+      <h1 style={{textAlign: "center", paddingTop:"50px"}}> به پنل فروشندگان اینیسا شاپ خوش آمدید</h1>
+    // <BrowserRouter>
+    //   <MuiThemeProvider theme={theme}>
+    //     <CssBaseline />
+    //     <GlobalStyles />
+    //     <Pace color={theme.palette.primary.light} />
+    //     <Suspense fallback={<Fragment />}>
+    //       <Switch>
+    //         <Route path="/c">
+    //           <LoggedInComponent />
+    //         </Route>
+    //         <Route>
+    //           <LoggedOutComponent />
+    //         </Route>
+    //       </Switch>
+    //     </Suspense>
+    //   </MuiThemeProvider>
+    // </BrowserRouter>
   );
 }
 
