@@ -74,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
 
     submit: {
         margin: theme.spacing(3, 0, 2),
+        fontSize: "1rem"
     },
 
     RememberMe:{
@@ -225,9 +226,6 @@ export default function SignIn() {
                       label="مرا به خاطر بسپار"
                     />
               </div>
-
-
-
 
                 <Button
                   type="button"
