@@ -1,4 +1,5 @@
 import { createMuiTheme, responsiveFontSizes } from "@material-ui/core";
+import { faIR } from '@material-ui/core/locale';
 
 // colors
 const primary = "#b3294e";
@@ -129,6 +130,6 @@ const theme = createMuiTheme({
       'IRANSans'
     ].join(','),
   }
-});
+}, faIR);
 
 export default responsiveFontSizes(theme);
