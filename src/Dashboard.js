@@ -126,8 +126,16 @@ export default function Dashboard() {
 
   const [currentMenuIndex, setCurrentMenuIndex] = React.useState(0);
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, []);
+
   useEffect( () => {
       setCurrentMenuIndex(state.currentMenuIndex);
+      if (isMobile)
+      {
+        setOpen(false);
+      }
   },[state.currentMenuIndex]);
 
   const handleDrawerOpen = () => {

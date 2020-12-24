@@ -47,12 +47,18 @@ const useStyles = makeStyles((theme) => ({
       },
 
       paper: {
-        marginTop: theme.spacing(8),
+        marginTop: theme.spacing(4),
+        [theme.breakpoints.up('sm')]: {
+          marginTop: theme.spacing(8),
+        },
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         flexWrap: 'wrap',
-        padding: theme.spacing(8),
+        padding: theme.spacing(4),
+        [theme.breakpoints.up('sm')]: {
+          padding: theme.spacing(8),
+        },
     
     },
 
@@ -156,15 +162,12 @@ export default function SignIn() {
             </AppBar>
           <Container component="main" maxWidth="sm">
 
-
-
             <Paper elevation={8} className={classes.paper}>
-
            
               <Avatar className={classes.avatar}>
                 <LockOutlinedIcon/>
               </Avatar>
-              <Typography component="h1" variant="h5">
+              <Typography component="h1" variant="h6" style={{marginBottom:"20px"}}>
                       ورود به پنل فروشندگان
               </Typography>
               <form className={classes.form} noValidate>
