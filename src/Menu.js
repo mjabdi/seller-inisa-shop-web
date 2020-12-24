@@ -3,12 +3,13 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 
 
-import { ListItemIcon, Tooltip } from '@material-ui/core';
+import { Divider, Grid, IconButton, ListItemIcon, Tooltip } from '@material-ui/core';
 import GlobalState from './GlobalState';
 import { List, ListItem } from '@material-ui/core';
 
 import ListItemText from '@material-ui/core/ListItemText';
 import {MenuList} from './MenuList';
+import { border, borderBottom } from '@material-ui/system';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -22,11 +23,28 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+
+  icon: {
+    fontSize: "1rem",
+    color: "#777",
+    cursor: "pointer",
+    paddingTop: "15px",
+    paddingBottom: "15px",
+    borderBottom: "1px solid #eee"
+  },
+
+  iconSelected: {
+    color : theme.palette.primary.main
+  },
+
+ 
+
+
 }));
 
 
 
-export default function DashboardPreview() {
+export default function Menu() {
   const classes = useStyles();
   const [state, setState] = React.useContext(GlobalState);
 
@@ -47,12 +65,43 @@ export default function DashboardPreview() {
             <List>
 
                   {MenuList.map((item) => ( (!item.hidden) && (
-                        <ListItem button selected={selectedIndex === item.index} onClick={(event) => handleListItemClick(event, item.index)}>
-                        <ListItemIcon>
-                            {item.icon}
-                        </ListItemIcon>
-                        <ListItemText primary={`${item.title}`} />
-                        </ListItem>
+                        // <ListItem button selected={selectedIndex === item.index} onClick={(event) => handleListItemClick(event, item.index)}>
+                        // <ListItemIcon>
+                        //     {item.icon}
+                        // </ListItemIcon>
+                        // <ListItemText primary={`${item.title}`} />
+                        // </ListItem>
+                        <React.Fragment>
+
+                            <div 
+                                className={clsx(classes.icon, (selectedIndex === item.index) && classes.iconSelected)}
+                                onClick={(event) => handleListItemClick(event, item.index)}
+                                >
+
+                              <Grid
+                                container
+                                direction="column"
+                                justify="center"
+                                alignItems="center"
+                              >
+                                <Grid item>
+                                    {item.icon}
+                                </Grid>
+
+                                <Grid item>
+                                    {`${item.title}`}
+                                </Grid>
+
+                            </Grid>  
+
+
+                            </div>
+                           
+
+                           
+
+                        </React.Fragment>
+
                      )
                   ))}
 

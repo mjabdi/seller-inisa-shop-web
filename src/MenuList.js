@@ -1,27 +1,16 @@
-import ListSubheader from '@material-ui/core/ListSubheader';
+
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import InstagramIcon from '@material-ui/icons/Instagram';
+import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 
 import DashboardPreview from './DashboardPreview';
 
 
-import NewReleasesIcon from '@material-ui/icons/NewReleases';
-import HistoryIcon from '@material-ui/icons/History';
-import TimelineIcon from '@material-ui/icons/Timeline';
-import DescriptionIcon from '@material-ui/icons/Description';
-import SearchIcon from '@material-ui/icons/Search';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import LiveTvIcon from '@material-ui/icons/LiveTv';
-import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
-import WarningIcon from '@material-ui/icons/Warning';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import DeleteIcon from '@material-ui/icons/Delete';
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
-import DateRangeIcon from '@material-ui/icons/DateRange';
-import EventNoteIcon from '@material-ui/icons/EventNote';
 
 export const MenuList = [
-    {index: 0, id:`dashboard`, title: `داشبورد`, icon : <DashboardIcon/>, content: <DashboardPreview />},
-    // {index: 1, id:`recentBookings`, title: `Recent Bookings`, icon : <AutorenewIcon/>, content: <BookingTable date="recent"/>, hidden : false},
+    {index: 0, id:`dashboard`, title: `داشبورد`, icon : <DashboardIcon style={{fontSize:"1.9rem"}}/>, content: <DashboardPreview />},
+    {index: 1, id:`posts`, title: `پست ها`, icon : <InstagramIcon style={{fontSize:"1.9rem"}}/>, content: <DashboardPreview />},
+    {index: 2, id:`products`, title: `محصولات`, icon : <ShoppingBasketIcon style={{fontSize:"1.9rem"}}/>, content: <DashboardPreview />},
     // {index: 2, id:`todayBookings`, title: `Today's Bookings`, icon : <NewReleasesIcon/>, content: <BookingTable date="today"/>},
     // {index: 3, id:`liveBookings`, title: `Live Bookings`, icon : <LiveTvIcon/>, content: <BookingTable date="live"/>},
     // {index: 4, id:`oldBookings`, title: `Old Bookings`, icon : <HistoryIcon/>, content: <BookingTable date="old"/>},

@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import GlobalState from './GlobalState';
 import Alert from '@material-ui/lab/Alert';
-import { AppBar, Checkbox, FormControl, FormControlLabel, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
+import { AppBar, Checkbox, FormControl, FormControlLabel, InputAdornment, InputLabel, OutlinedInput, Paper } from '@material-ui/core';
 import { IconButton, Toolbar } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import clsx from 'clsx';
@@ -52,6 +52,8 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         flexWrap: 'wrap',
+        padding: theme.spacing(8),
+    
     },
 
     avatar: {
@@ -146,18 +148,21 @@ export default function SignIn() {
     <React.Fragment>
         <AppBar position="absolute" color="primary" className={classes.appBar}>
                 <Toolbar>
-                    <Typography variant="h6" color="inherit" noWrap className={classes.title}>
-                            پنل فروشندگان اینیساشاپ
+                    <Typography variant="h5" color="inherit" noWrap className={classes.title}>
+                          <div style={{paddingTop:"20px", paddingBottom: "20px"}}>   پنل فروشندگان اینیساشاپ </div>
+                           
                     </Typography>
                 </Toolbar>
             </AppBar>
-          <Container component="main" maxWidth="xs">
+          <Container component="main" maxWidth="sm">
 
 
 
-            <div className={classes.paper}>
+            <Paper elevation={8} className={classes.paper}>
+
+           
               <Avatar className={classes.avatar}>
-                <LockOutlinedIcon />
+                <LockOutlinedIcon/>
               </Avatar>
               <Typography component="h1" variant="h5">
                       ورود به پنل فروشندگان
@@ -171,7 +176,7 @@ export default function SignIn() {
                   required
                   fullWidth
                   id="usrname"
-                  label="نام کاربری"
+                  label="نام کاربری (ایمیل)"
                   name="username"
                   autoComplete="username"
                   autoFocus
@@ -235,7 +240,9 @@ export default function SignIn() {
 
 
               </form>
-            </div>
+
+              </Paper>
+           
 
             {state.signedInError && (
                 <div className={classes.root}>

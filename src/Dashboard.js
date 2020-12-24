@@ -12,9 +12,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import { ExitToAppOutlined } from '@material-ui/icons';
+import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
 
 import { Tooltip } from '@material-ui/core';
@@ -37,7 +38,7 @@ function Copyright() {
   }
   
 
-const drawerWidth = 240;
+const drawerWidth = 120;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -121,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard() {
   const classes = useStyles();
   const [state, setState] = React.useContext(GlobalState);
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(isMobile ? false : true);
 
   const [currentMenuIndex, setCurrentMenuIndex] = React.useState(0);
 
@@ -130,7 +131,7 @@ export default function Dashboard() {
   },[state.currentMenuIndex]);
 
   const handleDrawerOpen = () => {
-    setOpen(true);
+    setOpen(!open);
   };
   const handleDrawerClose = () => {
     setOpen(false);
@@ -146,33 +147,26 @@ export default function Dashboard() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-        <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                     پنل فروشندگان اینیساشاپ
-          </Typography>
+      <AppBar  style={{backgroundColor:"#fff" , color:"#555"}} position="absolute" className={clsx(classes.appBar, false && open && classes.appBarShift)}>
 
-        {state.signedIn && (
-            <IconButton onClick={handleLogout} color="inherit">
-                 <Tooltip title="خروج">
-                      <ExitToAppOutlined/>
-                  </Tooltip>
-          </IconButton>
-        )}
-        </Toolbar>
+       
+          <Toolbar className={classes.toolbar}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              className={clsx(classes.menuButton)}
+            >
+              <MenuIcon />
+            </IconButton>
+
+          </Toolbar>
+       
       </AppBar>
      
       <Drawer
-        variant="permanent"
+        variant={isMobile ? 'temporary' : 'persistent'} 
         classes={{
           paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
         }}
@@ -180,7 +174,7 @@ export default function Dashboard() {
       >
         <div className={classes.toolbarIcon}>
           <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
+            <ChevronRightIcon />
           </IconButton>
         </div>
         <Divider />
