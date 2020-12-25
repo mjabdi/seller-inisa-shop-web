@@ -16,6 +16,8 @@ import { IconButton, Toolbar } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import clsx from 'clsx';
 
+import { useHistory } from "react-router-dom";
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -94,31 +96,32 @@ export default function SignIn() {
   const classes = useStyles();
   const [state, setState] = React.useContext(GlobalState);
 
-  const [password, setPassword] = React.useState(
-    localStorage.getItem('pcr-admin-password') || ''
-  );
+  let history = useHistory();
 
-  const [username, setUsername] = React.useState(
-    localStorage.getItem('pcr-admin-username') || ''
-  );
+  const [password, setPassword] = React.useState('');
 
-  const [saveChecked, setSaveChecked] = React.useState(
-    localStorage.getItem('pcr-admin-username') ? true : false
-  ); 
+  const [username, setUsername] = React.useState('');
+  
+
+  const [saveChecked, setSaveChecked] = React.useState(false);
+  
 
 
   const signIn = () => {
     if (username && password && ((username.toLowerCase() === 'admin' && password === 'inisa')))
     {
+        const token = 'uoiuwier239489238';
+
         setState(state => ({...state, signedIn : true }));
+        
         if (saveChecked)
         {
-           localStorage.setItem('pcr-admin-username', username);
-           localStorage.setItem('pcr-admin-password', password);
+           localStorage.setItem('inisa-auth-token', token);
         }else{
-          localStorage.removeItem('pcr-admin-username');
-          localStorage.removeItem('pcr-admin-password');
-        }
+           sessionStorage.setItem('inisa-auth-token', token);
+        } 
+
+        history.push('/dashboard');
 
     }else
     {

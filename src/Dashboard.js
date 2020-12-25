@@ -21,7 +21,9 @@ import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 import { Tooltip } from '@material-ui/core';
 import GlobalState from './GlobalState';
 import Menu from './Menu';
-import {getMenuContent} from './MenuList';
+import {getMenuContent, getMenuIndex} from './MenuList';
+
+import { useLocation, useHistory} from "react-router-dom";
 
 
 function Copyright() {
@@ -126,6 +128,17 @@ export default function Dashboard() {
 
   const [currentMenuIndex, setCurrentMenuIndex] = React.useState(0);
 
+  const history = useHistory();
+
+  let location = useLocation();
+  React.useEffect(() => {
+
+    const index = getMenuIndex(location.pathname.substr(1));
+    setState(state => ({...state, currentMenuIndex: index}));
+
+ 
+  }, [location]);
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, []);
@@ -138,6 +151,8 @@ export default function Dashboard() {
       }
   },[state.currentMenuIndex]);
 
+
+
   const handleDrawerOpen = () => {
     setOpen(!open);
   };
@@ -148,33 +163,48 @@ export default function Dashboard() {
 
   const handleLogout = () =>
   {
+    localStorage.removeItem('inisa-auth-token');
+    sessionStorage.removeItem('inisa-auth-token');
     setState(state => ({...state, signedIn: false}));
+    history.replace('./login');
   }
 
 
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar  style={{backgroundColor:"#fff" , color:"#555"}} position="absolute" className={clsx(classes.appBar, false && open && classes.appBarShift)}>
+      <AppBar
+        style={{ backgroundColor: "#fff", color: "#555" }}
+        position="absolute"
+        className={clsx(classes.appBar, false && open && classes.appBarShift)}
+      >
+        <Toolbar className={classes.toolbar}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            className={clsx(classes.menuButton)}
+          >
+            <MenuIcon />
+          </IconButton>
 
-       
-          <Toolbar className={classes.toolbar}>
+          <Tooltip title="خروج">
             <IconButton
-              edge="start"
+              edge="end"
               color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
+              aria-label="logout"
+              onClick={handleLogout}
               className={clsx(classes.menuButton)}
             >
-              <MenuIcon />
+              <ExitToAppOutlined />
             </IconButton>
-
-          </Toolbar>
-       
+          </Tooltip>
+        </Toolbar>
       </AppBar>
-     
+
       <Drawer
-        variant={isMobile ? 'temporary' : 'persistent'} 
+        variant={isMobile ? "temporary" : "persistent"}
         classes={{
           paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
         }}
@@ -187,16 +217,12 @@ export default function Dashboard() {
         </div>
         <Divider />
 
-        <Menu/>
-
-
+        <Menu />
       </Drawer>
-
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-
           {getMenuContent(currentMenuIndex)}
 
           <Box pt={4}>

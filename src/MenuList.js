@@ -4,13 +4,14 @@ import InstagramIcon from '@material-ui/icons/Instagram';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 
 import DashboardPreview from './DashboardPreview';
+import Posts from './Posts';
 
 
 
 export const MenuList = [
     {index: 0, id:`dashboard`, title: `داشبورد`, icon : <DashboardIcon style={{fontSize:"1.9rem"}}/>, content: <DashboardPreview />},
-    {index: 1, id:`posts`, title: `پست ها`, icon : <InstagramIcon style={{fontSize:"1.9rem"}}/>, content: <DashboardPreview />},
-    {index: 2, id:`products`, title: `محصولات`, icon : <ShoppingBasketIcon style={{fontSize:"1.9rem"}}/>, content: <DashboardPreview />},
+    {index: 1, id:`posts`, title: `پست ها`, icon : <InstagramIcon style={{fontSize:"1.9rem"}}/>, content: <Posts/>},
+    {index: 2, id:`products`, title: `محصولات`, icon : <ShoppingBasketIcon style={{fontSize:"1.9rem"}}/>, content: 'products'},
     // {index: 2, id:`todayBookings`, title: `Today's Bookings`, icon : <NewReleasesIcon/>, content: <BookingTable date="today"/>},
     // {index: 3, id:`liveBookings`, title: `Live Bookings`, icon : <LiveTvIcon/>, content: <BookingTable date="live"/>},
     // {index: 4, id:`oldBookings`, title: `Old Bookings`, icon : <HistoryIcon/>, content: <BookingTable date="old"/>},
@@ -36,8 +37,22 @@ export const MenuList = [
           }
       }
 
+      return (`صفحه مورد نظر یافت نشد!`); 
+  }
+
+  export const getMenuId = (index) =>
+  {
+      for (var i=0; i < MenuList.length; i++)
+      {
+          if (MenuList[i].index === index)
+          {
+              return MenuList[i].id;
+          }
+      }
+
       return (`Page Not Found!`); 
   }
+
 
 
   export const getMenuIndex = (id) =>
