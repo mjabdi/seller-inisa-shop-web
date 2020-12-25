@@ -18,6 +18,8 @@ import { ExitToAppOutlined } from '@material-ui/icons';
 import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
 
+
+
 import { Tooltip } from '@material-ui/core';
 import GlobalState from './GlobalState';
 import Menu from './Menu';
@@ -141,6 +143,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+
   }, []);
 
   useEffect( () => {
@@ -220,16 +223,25 @@ export default function Dashboard() {
         <Menu />
       </Drawer>
 
+   
+
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          {getMenuContent(currentMenuIndex)}
+        <Container maxWidth={isMobile ? 'xs' : 'lg'} className={classes.container}>
 
+             {getMenuContent(currentMenuIndex)}
+        
           <Box pt={4}>
             <Copyright />
-          </Box>
+         </Box>   
+        
         </Container>
+
+      
       </main>
+
+     
+
     </div>
   );
 }

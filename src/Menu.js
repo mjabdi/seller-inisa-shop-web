@@ -72,15 +72,15 @@ export default function Menu() {
               // </ListItemIcon>
               // <ListItemText primary={`${item.title}`} />
               // </ListItem>
-              <React.Fragment>
-                <div
+              <React.Fragment key={`${item.id}`}>
+                <div key={`${item.id}`}
                   className={clsx(
                     classes.icon,
                     selectedIndex === item.index && classes.iconSelected
                   )}
                   onClick={(event) => handleListItemClick(event, item.index)}
                 >
-                  <Grid
+                  <Grid 
                     container
                     direction="column"
                     justify="center"

@@ -24,6 +24,10 @@ import Zoom from '@material-ui/core/Zoom';
 import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
+import {BrowserView, MobileView, isMobile} from 'react-device-detect';
+
+
+
 function ScrollTop(props) {
     const { children, window } = props;
     const classes = useStyles();
@@ -62,30 +66,7 @@ function ScrollTop(props) {
     window: PropTypes.func,
   };
 
-function ElevationScroll(props) {
-    const { children, window } = props;
-    // Note that you normally won't need to set the window ref as useScrollTrigger
-    // will default to window.
-    // This is only being set here because the demo is in an iframe.
-    const trigger = useScrollTrigger({
-      disableHysteresis: true,
-      threshold: 0,
-      target: window ? window() : undefined,
-    });
-  
-    return React.cloneElement(children, {
-      elevation: trigger ? 4 : 0,
-    });
-  }
-  
-  ElevationScroll.propTypes = {
-    children: PropTypes.element.isRequired,
-    /**
-     * Injected by the documentation to work in an iframe.
-     * You won't need it on your project.
-     */
-    window: PropTypes.func,
-  };
+
 
 const useStyles = makeStyles((theme) => ({
 
@@ -134,11 +115,11 @@ const useStyles = makeStyles((theme) => ({
 
    
       media: {
-        height: 400,
+        height: 300,
       },
 
       card_root: {
-        width: 345,
+        width: 245,
       },
 }));
 
@@ -155,6 +136,9 @@ export default function Posts() {
 
   const [loadingMore, setLoadingMore] = useState(false);
 
+  
+  
+  
   useEffect( () => 
   {
      const loadFeeds = async () =>
@@ -162,7 +146,7 @@ export default function Posts() {
          try
          {
             setLoading(true);
-            const res = await InstaFeedService.getFeeds(state.shopId,12,endCursor); 
+            const res = await InstaFeedService.getFeeds(state.shopId, 12, endCursor); 
             
             if (res.data.status === 'OK')
             {
@@ -183,16 +167,13 @@ export default function Posts() {
      loadFeeds();
 
      const interval = setInterval(() => {
-        setLoadMore(false);
+        setLoadMore(false);      
      }, 2000);
 
      return () => {
          clearInterval(interval);
      }
-       
   
-
-
   }, []);
 
   useEffect( () => 
@@ -203,7 +184,7 @@ export default function Posts() {
          {        
             // console.log('loadFeeds...');
             setLoadingMore(true);
-            const res = await InstaFeedService.getFeeds(state.shopId,12,endCursor); 
+            const res = await InstaFeedService.getFeeds(state.shopId, 12, endCursor); 
             if (res.data.status === 'OK')
             {
                setFeeds([...feeds, ...res.data.posts]);
@@ -220,12 +201,10 @@ export default function Posts() {
 
     //  console.log(endCursor);
 
-     if (endCursor)
+     if (endCursor && loadMore)
      {
         loadFeeds();
      }
-    
-   
 
   }, [loadMore]);
 
@@ -233,98 +212,104 @@ export default function Posts() {
 
   const onProgressViewPort = ({progress}) =>
   {
-    //   console.log(progress);
-    //   console.log(loadMore);
+      console.log(progress);
+      console.log(loadMore);
      if (progress > 0.7)
      {
         setLoadMore(true);
      }
   }
 
+  const handleScroll = e => {
+    console.log(e);  
+    let element = e.target
+    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+      // do something at end of scroll
+    }
+  }
+
 
   return (
     <React.Fragment>
-        <div id="back-to-top-anchor"></div>
+      <div id="back-to-top-anchor"></div>
 
-      
-    {loading && (
-        <div style={{width:"100%", paddingTop:"3px"}}>
-                <LinearProgress color="secondary" />
+      {loading && (
+        <div style={{ width: "100%", paddingTop: "3px" }}>
+          <LinearProgress color="secondary" />
         </div>
-         
-
-    )}
+      )}
 
       {!loading && (
+        <div style={{ padding: "50px" }}>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            spacing={2}
+          >
+            {feeds.map((post, index) => (
+              <Grid item md={4} xs={12}>
+                <Card className={classes.card_root}>
+                  <CardActionArea>
+                    <CardMedia
+                      className={classes.media}
+                      image={post.imageUrlSmall}
+                      title="Contemplative Reptile"
+                    />
+                    <CardContent>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                      ></Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        {/* {post.caption} */}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                  <CardActions>
+                    <Button size="small" color="primary">
+                      خرید
+                    </Button>
+                    <Button size="small" color="primary">
+                      مشاهده بیشتر
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
 
-    <div style={{padding:"50px"}}>
-
-<ScrollTrigger onProgress={onProgressViewPort}>
-
-    <Grid container direction="row" alignContent="center" alignItems="center" justify="space-around" spacing={3}>
-
-        {feeds.map((post) => (
-            <Grid item md={4}> 
-                    <Card className={classes.card_root}>
-                        <CardActionArea>
-                            <CardMedia
-                                className={classes.media}
-                                image={post.images[0].display_url}
-                                title="Contemplative Reptile"
-                            />
-                            <CardContent>
-                            <Typography gutterBottom variant="h5" component="h2">
-                                
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary" component="p">
-                                         {/* {post.caption} */}
-                            </Typography>
-                            </CardContent>
-                        </CardActionArea>
-                        <CardActions>
-                            <Button size="small" color="primary">
-                            Buy
-                            </Button>
-                            <Button size="small" color="primary">
-                            See More
-                            </Button>
-                        </CardActions>
-                        </Card>
-            
-            </Grid>
-
-       
-
-        ))}
-
-
-                  </Grid>
-
-                  </ScrollTrigger>
-             </div>
-      )}   
-         
-
-       {loadingMore && (
-            
-            <div style={{position:"fixed", right: "50px", bottom: "50px"}}>
-                <CircularProgress color="secondary" />
+          {endCursor && (
+            <div style={{display:'flex' , justifyContent:'center', width:"100%", marginTop:"30px", marginBottom:"20px"}}>
+              <Button color="primary" variant="outlined" onClick={() => setLoadMore(true)} onTouchTap={() => setLoadMore(true)} >پست های بیشتر</Button>
             </div>
-       )}
-     
+          )}
+        </div>
+      )}
 
-     <ScrollTop>
+      {loadingMore && (
+        <div
+          style={{
+            position: "fixed",
+            left: isMobile ? `10px` : `100px`,
+            bottom: "50px",
+          }}
+        >
+          <CircularProgress color="secondary" />
+        </div>
+      )}
+
+      <ScrollTop>
         <Fab color="secondary" size="small" aria-label="scroll back to top">
           <KeyboardArrowUpIcon />
         </Fab>
       </ScrollTop>
-
-
-         
-        
-
     </React.Fragment>
-
-    
   );
 }
