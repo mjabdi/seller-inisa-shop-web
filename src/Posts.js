@@ -258,7 +258,7 @@ export default function Posts() {
             spacing={1}
           >
             {feeds.map((post, index) => (
-              <Grid key={`post-${index}`} item xl={2} lg={3} md={4} sm={6} xs={12}>
+              <Grid key={`post-${index}`} item xl={3} lg={4} md={4} sm={6} xs={12}>
                 <Card className={classes.card_root}>
                   <CardActionArea>
                     <CardMedia
