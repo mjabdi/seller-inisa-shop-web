@@ -15,7 +15,7 @@ import Slide from "@material-ui/core/Slide";
 import PropTypes, { func } from "prop-types";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
-import { Grid } from "@material-ui/core";
+import { Grid, Paper } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import PostImageService from "./services/PostImageService";
 import ImageGallery from 'react-image-gallery';
@@ -29,6 +29,40 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     flex: 1,
   },
+  paper: {
+    marginTop: theme.spacing(0),
+    [theme.breakpoints.up('sm')]: {
+      marginTop: theme.spacing(0),
+    },
+    
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    padding: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      padding: theme.spacing(4),
+     },
+    },
+
+    form: {
+        minHeight: "500px",
+        marginTop: theme.spacing(0),
+        [theme.breakpoints.up('sm')]: {
+          marginTop: theme.spacing(0),
+        },
+        
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        padding: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+          padding: theme.spacing(4),
+         },
+        },
+
+
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -144,7 +178,7 @@ const AddProductDialog = ({
 
           <div id="add-product-content" style={{ padding: "50px" }}>
             
-            <Grid container direction="row-reverse">
+            <Grid container direction="row-reverse" spacing={2}>
                 <Grid item xs={12} md={4} lg={3} xl={2}>
                     <div>
                         <ImageGallery 
@@ -157,8 +191,19 @@ const AddProductDialog = ({
                                 showThumbnails={postImages?.length > 1}
                         />
                      </div>
-
                 </Grid>
+                <Grid item xs={12} md={3} lg={3} xl={2}>
+                     <Paper elevation={8} className={classes.paper}>
+                       {post.caption.length > 0 ? post.caption : 'متنی برای این پست وجود ندارد'}
+                     </Paper>
+                </Grid>
+
+                <Grid item xs={12} md={5} lg={6} xl={8}>
+                     <Paper elevation={8} className={classes.form}>
+
+                     </Paper>
+                </Grid>
+
 
             </Grid>
            
