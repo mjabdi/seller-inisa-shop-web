@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import GlobalState from './GlobalState';
 
-import { CircularProgress, Grid } from '@material-ui/core';
+import { CircularProgress, Grid, IconButton, Tooltip } from '@material-ui/core';
 import InstaFeedService from './services/InstaFeedService';
 
 
@@ -25,6 +25,12 @@ import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 import {BrowserView, MobileView, isMobile} from 'react-device-detect';
+
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+
+
 
 
 
@@ -115,11 +121,11 @@ const useStyles = makeStyles((theme) => ({
 
    
       media: {
-        height: 300,
+        height: 325,
       },
 
       card_root: {
-        width: 245,
+        width: 265,
       },
 }));
 
@@ -135,6 +141,8 @@ export default function Posts() {
   const [loadMore, setLoadMore] = useState(false);
 
   const [loadingMore, setLoadingMore] = useState(false);
+
+  const [showCaption, setShowCaption] = useState(false);
 
   
   
@@ -243,13 +251,13 @@ export default function Posts() {
         <div style={{ padding: "50px" }}>
           <Grid
             container
-            direction="row"
+            direction="row-reverse"
             justify="center"
-            alignItems="center"
-            spacing={2}
+            alignItems="flex-start"
+            spacing={1}
           >
             {feeds.map((post, index) => (
-              <Grid item md={4} xs={12}>
+              <Grid item xl={2} lg={3} md={4} sm={6} xs={12}>
                 <Card className={classes.card_root}>
                   <CardActionArea>
                     <CardMedia
@@ -268,17 +276,36 @@ export default function Posts() {
                         color="textSecondary"
                         component="p"
                       >
-                        {post.caption}
+                         {showCaption ? (post.caption.length > 0 ? post.caption : 'برای این پست متنی وجود ندارد') : ''} 
                       </Typography>
                     </CardContent>
                   </CardActionArea>
                   <CardActions>
                     <Button size="small" color="primary">
-                      خرید
+                      مشاهده جزئیات
                     </Button>
-                    <Button size="small" color="primary">
-                      مشاهده بیشتر
+                    <Button variant="outlined" size="small" color="primary">
+                      تعریف محصول
                     </Button>
+
+                    <IconButton
+                      style={{ flexGrow: 1 }}
+                      size="small"
+                      color="primary"
+                      onClick={() => setShowCaption(!showCaption)}
+                      onTouchTap = {() => setShowCaption(!showCaption)}
+                    >
+                      <Tooltip title= {!showCaption? "مشاهده متن" : "پنهان کردن متن" }>
+                        {!showCaption ? 
+                            <ExpandMoreIcon/>
+                        : 
+                            <ExpandLessIcon/>
+                        }
+                       
+                      </Tooltip>
+                    </IconButton>
+
+
                   </CardActions>
                 </Card>
               </Grid>
@@ -286,8 +313,23 @@ export default function Posts() {
           </Grid>
 
           {endCursor && (
-            <div style={{display:'flex' , justifyContent:'center', width:"100%", marginTop:"30px", marginBottom:"20px"}}>
-              <Button color="primary" variant="outlined" onClick={() => setLoadMore(true)} onTouchTap={() => setLoadMore(true)} >پست های بیشتر</Button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                marginTop: "30px",
+                marginBottom: "20px",
+              }}
+            >
+              <Button
+                color="primary"
+                variant="outlined"
+                onClick={() => setLoadMore(true)}
+                onTouchTap={() => setLoadMore(true)}
+              >
+                پست های بیشتر
+              </Button>
             </div>
           )}
         </div>

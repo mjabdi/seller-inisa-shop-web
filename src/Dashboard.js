@@ -227,7 +227,7 @@ export default function Dashboard() {
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth={isMobile ? 'xs' : 'lg'} className={classes.container}>
+        <Container maxWidth={isMobile ? 'xs' : 'xl'} className={classes.container}>
 
              {getMenuContent(currentMenuIndex)}
         
