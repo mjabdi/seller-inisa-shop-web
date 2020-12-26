@@ -30,6 +30,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
+import AddProductDialog from './AddProductDialog';
+
 
 
 
@@ -144,7 +146,12 @@ export default function Posts() {
 
   const [showCaption, setShowCaption] = useState(false);
 
-  
+
+
+  const [openAddProductDialog, setOpenAddProductDialog] = React.useState(false);
+  const [selectedPost, setSelectedPost] = React.useState(null);
+
+
   
   
   useEffect( () => 
@@ -217,24 +224,18 @@ export default function Posts() {
   }, [loadMore]);
 
 
-
-  const onProgressViewPort = ({progress}) =>
+  const addProductClicked = (post) =>
   {
-      console.log(progress);
-      console.log(loadMore);
-     if (progress > 0.7)
-     {
-        setLoadMore(true);
-     }
+    setSelectedPost(post);
+    setOpenAddProductDialog(true);
   }
 
-  const handleScroll = e => {
-    console.log(e);  
-    let element = e.target
-    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
-      // do something at end of scroll
-    }
+  const addproductDialogClosed = () =>
+  {
+    setOpenAddProductDialog(false);
+    setSelectedPost(null);
   }
+
 
 
   return (
@@ -257,7 +258,7 @@ export default function Posts() {
             spacing={1}
           >
             {feeds.map((post, index) => (
-              <Grid item xl={2} lg={3} md={4} sm={6} xs={12}>
+              <Grid key={`post-${index}`} item xl={2} lg={3} md={4} sm={6} xs={12}>
                 <Card className={classes.card_root}>
                   <CardActionArea>
                     <CardMedia
@@ -284,7 +285,7 @@ export default function Posts() {
                     <Button size="small" color="primary">
                       مشاهده جزئیات
                     </Button>
-                    <Button variant="outlined" size="small" color="primary">
+                    <Button variant="outlined" size="small" color="primary" onClick={() => addProductClicked(post)}>
                       تعریف محصول
                     </Button>
 
@@ -352,6 +353,9 @@ export default function Posts() {
           <KeyboardArrowUpIcon />
         </Fab>
       </ScrollTop>
+
+
+      <AddProductDialog open={openAddProductDialog} handleClose={addproductDialogClosed} post={selectedPost} />
     </React.Fragment>
   );
 }
