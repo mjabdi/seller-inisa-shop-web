@@ -2,9 +2,8 @@ import React, { Fragment, Suspense, lazy } from "react";
 import { MuiThemeProvider, CssBaseline } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import theme from "./theme";
-import GlobalStyles from "./GlobalStyles";
+// import GlobalStyles from "./GlobalStyles";
 import * as serviceWorker from "./serviceWorker";
-import Pace from "./shared/components/Pace";
 
 import GlobalState from "./GlobalState";
 import Navigator from './Navigator';
@@ -16,12 +15,6 @@ import { StylesProvider, jssPreset } from '@material-ui/core/styles';
 // Configure JSS
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
-const LoggedInComponent = lazy(() => import("./logged_in/components/Main"));
-
-const LoggedOutComponent = lazy(() => import("./logged_out/components/Main"));
-
-
-
 function App() {
   const [state, setState] = React.useState({currentMenuIndex:0});
 
@@ -31,7 +24,7 @@ function App() {
       <BrowserRouter>
         <MuiThemeProvider theme={theme}>
           <CssBaseline />
-          <GlobalStyles />
+          {/* <GlobalStyles /> */}
 
           <StylesProvider jss={jss}>
 
@@ -39,17 +32,7 @@ function App() {
 
           </StylesProvider>
 
-          {/* <Pace color={theme.palette.primary.light} />
-        <Suspense fallback={<Fragment />}>
-          <Switch>
-            <Route path="/c">
-              <LoggedInComponent />
-            </Route>
-            <Route>
-              <LoggedOutComponent />
-            </Route>
-          </Switch>
-        </Suspense> */}
+
         </MuiThemeProvider>
       </BrowserRouter>
     </GlobalState.Provider>
