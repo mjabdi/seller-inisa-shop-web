@@ -146,7 +146,7 @@ export default function Posts() {
          try
          {
             setLoading(true);
-            const res = await InstaFeedService.getFeeds(state.shopId, 12, endCursor); 
+            const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor); 
             
             if (res.data.status === 'OK')
             {
@@ -184,7 +184,7 @@ export default function Posts() {
          {        
             // console.log('loadFeeds...');
             setLoadingMore(true);
-            const res = await InstaFeedService.getFeeds(state.shopId, 12, endCursor); 
+            const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor); 
             if (res.data.status === 'OK')
             {
                setFeeds([...feeds, ...res.data.posts]);
@@ -268,7 +268,7 @@ export default function Posts() {
                         color="textSecondary"
                         component="p"
                       >
-                        {/* {post.caption} */}
+                        {post.caption}
                       </Typography>
                     </CardContent>
                   </CardActionArea>
