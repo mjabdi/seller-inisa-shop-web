@@ -125,7 +125,6 @@ const theme = createMuiTheme({
     }
   },
   typography: {
-    useNextVariants: true,
     fontFamily: [
       'IRANSans'
     ].join(','),
