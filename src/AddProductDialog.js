@@ -23,7 +23,7 @@ import "./image-gallery.css";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
-    position: "relative",
+    position: "fixed",
   },
   title: {
     marginLeft: theme.spacing(2),
@@ -61,6 +61,8 @@ const useStyles = makeStyles((theme) => ({
           padding: theme.spacing(4),
          },
         },
+
+      
 
 
 }));
@@ -176,7 +178,7 @@ const AddProductDialog = ({
           </AppBar>
 
 
-          <div id="add-product-content" style={{ padding: "50px" }}>
+          <div id="add-product-content" style={{ padding: "50px", marginTop:"20px" }}>
             
             <Grid container direction="row-reverse" spacing={2}>
                 <Grid item xs={12} md={4} lg={3} xl={2}>
