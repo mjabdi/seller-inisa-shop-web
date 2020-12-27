@@ -82,7 +82,7 @@ export default function Navigator() {
 
       checkToken();
    
-    }, []);
+    }, [location.pathname]);
 
     return (
         <React.Fragment>
