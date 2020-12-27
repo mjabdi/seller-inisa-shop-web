@@ -31,7 +31,7 @@
     "react-number-format": "^4.4.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-rte": "https://github.com/machineghost/react-rte#master",
+    "react-rte": "git+https://github.com/machineghost/react-rte.git#master",
     "react-scripts": "^4.0.1",
     "react-scroll-trigger": "^0.6.10",
     "recharts": "^1.8.5"
