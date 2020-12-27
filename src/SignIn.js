@@ -76,7 +76,8 @@ const useStyles = makeStyles((theme) => ({
 
     submit: {
         margin: theme.spacing(3, 0, 2),
-        fontSize: "1rem"
+        fontSize: "1rem",
+        cursor: "pointer"
     },
 
     RememberMe:{
@@ -90,6 +91,10 @@ const useStyles = makeStyles((theme) => ({
       alignItems: 'center'
   
     },
+
+    alert:{
+      width: "100%"
+    }
 }));
 
 export default function SignIn() {
@@ -113,7 +118,7 @@ export default function SignIn() {
         const token = 'uoiuwier239489238';
 
         setState(state => ({...state, signedIn : true }));
-        
+
         if (saveChecked)
         {
            localStorage.setItem('inisa-auth-token', token);
@@ -236,7 +241,6 @@ export default function SignIn() {
                   variant="contained"
                   color="primary"
                   onClick = {signIn}
-                  onTouchTap = {signIn}
                   className={classes.submit}
                 >
                   ورود
@@ -245,15 +249,17 @@ export default function SignIn() {
 
               </form>
 
-              </Paper>
-           
-
-            {state.signedInError && (
-                <div className={classes.root}>
-                    <Alert fullWidth severity="error">نام کاربری یا رمز عبور اشتباه می باشد</Alert>
+              {state.signedInError && (
+                <div className={classes.alert}>
+                    <Alert severity="error">نام کاربری یا رمز عبور اشتباه می باشد</Alert>
                 </div> 
             )}
 
+
+              </Paper>
+           
+
+          
             <Box mt={8}>
               <Copyright />
             </Box>

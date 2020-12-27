@@ -32,10 +32,6 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 import AddProductDialog from './AddProductDialog';
 
-
-
-
-
 function ScrollTop(props) {
     const { children, window } = props;
     const classes = useStyles();
@@ -161,7 +157,9 @@ export default function Posts() {
          try
          {
             setLoading(true);
-            const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor); 
+            const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor);
+            console.log(res);
+
             
             if (res.data.status === 'OK')
             {
