@@ -89,6 +89,10 @@ const useStyles = makeStyles((theme) => ({
       }
 }));
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 export default function Posts() {
   const classes = useStyles();
 
@@ -117,6 +121,12 @@ export default function Posts() {
          try
          {
             setLoading(true);
+
+            while (!state.shopId)
+            {
+                await sleep(200);
+            }
+
             const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor);
             console.log(res);
             
