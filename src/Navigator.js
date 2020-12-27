@@ -13,6 +13,7 @@ import SignIn from './SignIn';
 import Dashboard from './Dashboard';
 
 import { useLocation, useHistory} from "react-router-dom";
+import { getShopIdFromToken } from './TokenVerifier';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -55,26 +56,31 @@ export default function Navigator() {
 
     React.useEffect(() => {
 
-     const authToken = localStorage.getItem('inisa-auth-token') || sessionStorage.getItem('inisa-auth-token');
-     setState(state => ({...state, authToken: authToken}));
-     if (!authToken)
-     {
-       setState(state => ({...state, signedIn: false}));
-       history.replace('/login');
-     }
-     else
-     {
-        setState(state => ({...state, shopId: '1583276230'}));
-
-        if (location.pathname === '/' || location.pathname.startsWith('/login'))
+      const checkToken = async () =>
+      {
+        const authToken = localStorage.getItem('inisa-auth-token') || sessionStorage.getItem('inisa-auth-token');
+        setState(state => ({...state, authToken: authToken}));
+        if (!authToken)
         {
           setState(state => ({...state, signedIn: false}));
+          history.replace('/login');
         }
         else
         {
-          setState(state => ({...state, signedIn: true}));
+           const shopId = await getShopIdFromToken(authToken);
+   
+           if (location.pathname === '/' || location.pathname.startsWith('/login'))
+           {
+             setState(state => ({...state, signedIn: false}));
+           }
+           else
+           {
+             setState(state => ({...state, signedIn: true, shopId: shopId}));
+           }
         }
-     }
+      }
+
+      checkToken();
    
     }, []);
 

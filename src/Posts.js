@@ -16,11 +16,6 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 
-import ScrollTrigger from 'react-scroll-trigger';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import PropTypes from 'prop-types';
-
-import Zoom from '@material-ui/core/Zoom';
 import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
@@ -31,45 +26,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 import AddProductDialog from './AddProductDialog';
-
-function ScrollTop(props) {
-    const { children, window } = props;
-    const classes = useStyles();
-    // Note that you normally won't need to set the window ref as useScrollTrigger
-    // will default to window.
-    // This is only being set here because the demo is in an iframe.
-    const trigger = useScrollTrigger({
-      target: window ? window() : undefined,
-      disableHysteresis: true,
-      threshold: 100,
-    });
-  
-    const handleClick = (event) => {
-      const anchor = (event.target.ownerDocument || document).querySelector('#back-to-top-anchor');
-  
-      if (anchor) {
-        anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    };
-  
-    return (
-      <Zoom in={trigger}>
-        <div onClick={handleClick} role="presentation" className={classes.rootZoom}>
-          {children}
-        </div>
-      </Zoom>
-    );
-  }
-  
-  ScrollTop.propTypes = {
-    children: PropTypes.element.isRequired,
-    /**
-     * Injected by the documentation to work in an iframe.
-     * You won't need it on your project.
-     */
-    window: PropTypes.func,
-  };
-
 
 
 const useStyles = makeStyles((theme) => ({
@@ -125,10 +81,19 @@ const useStyles = makeStyles((theme) => ({
       card_root: {
         width: 265,
       },
+
+      FabScrollTop:{
+        position: 'absolute',
+        bottom: theme.spacing(4),
+        right: theme.spacing(isMobile ? 1 : 5),
+      }
 }));
 
 export default function Posts() {
   const classes = useStyles();
+
+  const topRef = React.useRef(null);
+
   const [state, setState] = React.useContext(GlobalState);
 
   const [feeds, setFeeds] = React.useState([]);
@@ -142,13 +107,8 @@ export default function Posts() {
 
   const [showCaption, setShowCaption] = useState(false);
 
-
-
   const [openAddProductDialog, setOpenAddProductDialog] = React.useState(false);
   const [selectedPost, setSelectedPost] = React.useState(null);
-
-
-  
   
   useEffect( () => 
   {
@@ -159,7 +119,6 @@ export default function Posts() {
             setLoading(true);
             const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor);
             console.log(res);
-
             
             if (res.data.status === 'OK')
             {
@@ -212,8 +171,6 @@ export default function Posts() {
          }          
      } 
 
-    //  console.log(endCursor);
-
      if (endCursor && loadMore)
      {
         loadFeeds();
@@ -234,11 +191,15 @@ export default function Posts() {
     setSelectedPost(null);
   }
 
+  const scrollToTop = () => {    
+    topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })  
+  };
+
 
 
   return (
     <React.Fragment>
-      <div id="back-to-top-anchor"></div>
+      <div ref={topRef} id="back-to-top-anchor"></div>
 
       {loading && (
         <div style={{ width: "100%", paddingTop: "3px" }}>
@@ -247,7 +208,7 @@ export default function Posts() {
       )}
 
       {!loading && (
-        <div style={{ padding: "50px" }}>
+        <div style={{ padding: isMobile ? "30px" : "50px" }}>
           <Grid
             container
             direction="row-reverse"
@@ -288,11 +249,10 @@ export default function Posts() {
                     </Button>
 
                     <IconButton
-                      style={{ flexGrow: 1 }}
+                      style={{ flexGrow: 1, cursor: "pointer" }}
                       size="small"
                       color="primary"
                       onClick={() => setShowCaption(!showCaption)}
-                      onTouchTap = {() => setShowCaption(!showCaption)}
                     >
                       <Tooltip title= {!showCaption? "مشاهده متن" : "پنهان کردن متن" }>
                         {!showCaption ? 
@@ -322,13 +282,15 @@ export default function Posts() {
               }}
             >
               <Button
+                style={{cursor:"pointer"}}
                 color="primary"
                 variant="outlined"
                 onClick={() => setLoadMore(true)}
-                onTouchTap={() => setLoadMore(true)}
               >
                 پست های بیشتر
               </Button>
+
+            
             </div>
           )}
         </div>
@@ -346,12 +308,14 @@ export default function Posts() {
         </div>
       )}
 
-      <ScrollTop>
-        <Fab color="secondary" size="small" aria-label="scroll back to top">
-          <KeyboardArrowUpIcon />
-        </Fab>
-      </ScrollTop>
-
+            <Fab className={classes.FabScrollTop} 
+                    color="secondary" 
+                    size="small"
+                    aria-label="scroll back to top"
+                    onClick={() => scrollToTop()}
+                    >
+                    <KeyboardArrowUpIcon />
+              </Fab>
 
       <AddProductDialog open={openAddProductDialog} handleClose={addproductDialogClosed} post={selectedPost} />
     </React.Fragment>
