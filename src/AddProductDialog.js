@@ -255,6 +255,7 @@ const AccordionSummary = withStyles({
     },
   },
   content: {
+     display: "inline-block", 
     "&$expanded": {
       margin: "12px 0",
     },
