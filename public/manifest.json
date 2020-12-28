@@ -1,6 +1,6 @@
 {
-  "short_name": "WaVer",
-  "name": "WaVer react template",
+  "short_name": "InisaShop",
+  "name": "InisaShop Admin Console",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,7 +18,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "theme_color": "#b3294e",
   "background_color": "#f5f5f5"
