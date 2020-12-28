@@ -93,6 +93,8 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+ 
+
 export default function Posts() {
   const classes = useStyles();
 
@@ -318,14 +320,17 @@ export default function Posts() {
         </div>
       )}
 
+          {!loading && (
             <Fab className={classes.FabScrollTop} 
-                    color="secondary" 
-                    size="small"
-                    aria-label="scroll back to top"
-                    onClick={() => scrollToTop()}
-                    >
-                    <KeyboardArrowUpIcon />
-              </Fab>
+                color="secondary" 
+                size="small"
+                aria-label="scroll back to top"
+                onClick={() => scrollToTop()}
+                >
+                <KeyboardArrowUpIcon />
+            </Fab>
+          )}
+           
 
       <AddProductDialog open={openAddProductDialog} handleClose={addproductDialogClosed} post={selectedPost} />
     </React.Fragment>

@@ -12,12 +12,18 @@ import Slide from "@material-ui/core/Slide";
 import PropTypes from "prop-types";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
-import { Grid, InputLabel, Paper, TextField } from "@material-ui/core";
+import { Checkbox, Chip, FormControl, FormControlLabel, FormLabel, Grid, InputAdornment, InputLabel, MenuItem, Paper, Radio, RadioGroup, Select, TextField, Tooltip } from "@material-ui/core";
 import PostImageService from "./services/PostImageService";
 import ImageGallery from 'react-image-gallery';
 import "./image-gallery.css";
 import RichTextEditor from 'react-rte';
 import NumberFormat from 'react-number-format';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import UndoIcon from '@material-ui/icons/Undo';
+import {convertToPersian} from './persian-numbers';
+
+
+import persianRex from 'persian-rex';
 
 import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
@@ -160,6 +166,8 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+    
+
 function NumberFormatCustom(props) {
     const { inputRef, onChange, ...other } = props;
   
@@ -188,7 +196,11 @@ function NumberFormatCustom(props) {
     onChange: PropTypes.func.isRequired,
   };
   
-
+  function getTagsFromCaption(caption)
+  {
+    const result = caption.split(' ').filter(v=> v.startsWith('#'));
+    return result;
+  } 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -204,9 +216,11 @@ const AddProductDialog = ({
 
   const classes = useStyles();
 
-  
+  const [futureDayList, setFutureDayList] = React.useState([]);
 
   const [postImages, setPostImages] = React.useState(null);
+
+  const [hashTags, setHashTags] = React.useState(null);
 
   const [productTitle, setProductTitle] = React.useState('');
   const productTitleChanged = (event) =>
@@ -233,6 +247,59 @@ const AddProductDialog = ({
   { 
     setProductPriceAfterDiscount(event.target.value);
   }
+
+  const [productSKUCode, setProductSKUCode] = React.useState('');
+  const productSKUCodeChanged = (event) =>
+  {
+      setProductSKUCode(event.target.value);
+  }
+
+  const [productBarCode, setProductBarCode] = React.useState('');
+  const productBarCodeChanged = (event) =>
+  {
+      setProductBarCode(event.target.value);
+  }
+
+  const [trackQuantity, setTrackQuantity] = React.useState(false);
+  const trackQuantityChanged = (event) =>
+  {
+        setTrackQuantity(event.target.checked);
+  }
+
+  const [continueSelling, setContinueSelling] = React.useState(false);
+  const continueSellingChanged = (event) =>
+  {
+        setContinueSelling(event.target.checked);
+  }
+
+  const [inStock, setInStock] = React.useState(0);
+  const inStockChanged = (event) =>
+  {
+        setInStock(event.target.value);
+  }
+
+  const [newHashTag, setNewHashTag] = React.useState('');
+  const newHashTagChanged = (event) =>
+  {
+        setNewHashTag(event.target.value);
+  }
+
+  const [deliveryTimeOption, setDeliveryTimeOption] = React.useState('today');
+  const deliveryTimeOptionChanged = (event) =>
+  {
+    setDeliveryTimeOption(event.target.value);
+  }
+
+  const [futureDay, setfutureDay] = React.useState(1);
+  const futureDayChanged = (event) =>
+  {
+    setfutureDay(event.target.value);
+  }
+  
+
+  
+
+
 
   React.useEffect( () => {
 
@@ -262,10 +329,23 @@ const AddProductDialog = ({
     if (post)
     {
         setPostImages([{imageUrl: post.imageUrl, imageUrlSmall: post.imageUrlSmall}])
-        loadPostImages();   
+        loadPostImages();  
+        
+        setHashTags(getTagsFromCaption(post.caption));
+        populateFutureDayList();
     }
  
   }, [post]);
+
+  const populateFutureDayList = () =>
+  {
+      const temp = [];
+      for (var i=1 ; i <= 120; i++)
+      {
+        temp.push({value: i , text: i});
+      }
+      setFutureDayList(temp);
+  }
 
   const _handleClose = () => {
         setPostImages(null);
@@ -285,6 +365,51 @@ const AddProductDialog = ({
       _handleClose();
     }, 1000);
   };
+
+  const deleteHashTagAtIndex = (index) =>
+  {
+      if (hashTags && hashTags[index])
+      {
+          let temp = [...hashTags];
+          temp.splice(index,1);
+          setHashTags(temp);
+      }
+  }
+
+  const newHashTagPressed = (event) =>
+  {
+    if (event.key === 'Enter') {
+        if (newHashTag && newHashTag.length > 0)
+        {
+            const newHashTagStr = '#' + newHashTag.trim();
+            if (!hashTags.find(e => e.trim() === newHashTagStr))
+            {
+                hashTags.splice(0, 0, '#' + newHashTag);
+            }
+           
+            setNewHashTag('');
+        }
+      }
+  }
+
+  const newHashTagClicked = () =>
+  {
+        if (newHashTag && newHashTag.length > 0)
+        {
+            const newHashTagStr = '#' + newHashTag.trim();
+            if (!hashTags.find(e => e.trim() === newHashTagStr))
+            {
+                hashTags.splice(0, 0, '#' + newHashTag);
+            }
+           
+            setNewHashTag('');
+        }
+  }
+
+  const resetHashTagClicked = () =>
+  {
+    setHashTags(getTagsFromCaption(post.caption));
+  }
 
   return (
     <>
@@ -519,7 +644,7 @@ const AddProductDialog = ({
                                                 >
                                                 <Grid item>
                                                     <span className={classes.cardTitle}>
-                                                        انبارگردانی
+                                                       انبارگردانی  ( اختیاری )
                                                     </span> 
                                                 </Grid>
                                                 </Grid>                                 
@@ -529,8 +654,70 @@ const AddProductDialog = ({
                                         <div style={{padding:"20px", width: "100%"}}>
                                             <Grid container direction="column" justify="flex-start"  alignItems="stretch" spacing={3}>
                                                 <Grid item xs={12}>
-                                                   
-                                                </Grid>
+                                                    <TextField 
+                                                                error={false}
+                                                                id="product-sku-code" label={" شناسه محصول" + " (SKU) "}
+                                                                fullWidth autoComplete="none" 
+                                                                value = {productSKUCode}
+                                                                helperText="شناسه sku محصول در جاهای مختلفی مثل انبار، خرده فروشی، تجارت الکترونیک، تولید و بسته بندی، فروش و ردیابی محصول، تحلیل محصول و مدیریت محصول کاربرد دارد. معمولا از شناسه sku محصول برای شناسای محصول، اندازه یا نوع و سازنده آن استفاده می شود"
+                                                                onChange = {productSKUCodeChanged} 
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12}>
+                                                          <TextField 
+                                                                error={false}
+                                                                id="product-bar-code" label="بارکد محصول" 
+                                                                fullWidth autoComplete="none" 
+                                                                value = {productBarCode}
+                                                                helperText="شناسه sku محصول در جاهای مختلفی مثل انبار، خرده فروشی، تجارت الکترونیک، تولید و بسته بندی، فروش و ردیابی محصول، تحلیل محصول و مدیریت محصول کاربرد دارد. معمولا از شناسه sku محصول برای شناسای محصول، اندازه یا نوع و سازنده آن استفاده می شود"
+                                                                onChange = {productBarCodeChanged} 
+                                                        />
+                                                    </Grid>
+
+                                                    <Grid item xs={12}>
+                                                        <FormControlLabel  
+                                                            control={<Checkbox
+                                                                    color="secondary" 
+                                                                    name="trackQuantity" 
+                                                                    checked={trackQuantity} 
+                                                                    onChange={trackQuantityChanged} />}
+                                                            label={<span style={{ fontSize: '0.8rem' }}>{`مدیریت موجودی محصولات`} 
+                                                            </span>}
+                                                        />
+                                                    </Grid>
+
+                                                    {trackQuantity && (
+                                                        <React.Fragment>
+                                                            <Grid item xs={12}>
+                                                                <FormControlLabel 
+                                                                    control={<Checkbox 
+                                                                            color="secondary" 
+                                                                            name="continueSelling" 
+                                                                            checked={continueSelling} 
+                                                                            onChange={continueSellingChanged} />}
+                                                                    label={<span style={{ fontSize: '0.8rem' }}>{`حتی پس از اتمام موجودی، فروش ادامه یابد`} 
+                                                                    </span>}
+                                                                />
+                                                            </Grid>
+
+                                                            <Grid item xs={12}>
+
+                                                                <TextField
+                                                                    label="موجودی انبار"
+                                                                    value={inStock}
+                                                                    fullWidth
+                                                                    onChange={inStockChanged}
+                                                                    helperText="برای وارد کردن عدد لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
+                                                                    name="product-instock"
+                                                                    id="product-instock-id"
+                                                                    InputProps={{
+                                                                    inputComponent: NumberFormatCustom,
+                                                                    }}
+                                                                />
+                                                                
+                                                            </Grid>
+                                                        </React.Fragment>
+                                                    )}                
                                             </Grid>
                                         </div>
 
@@ -549,7 +736,7 @@ const AddProductDialog = ({
                                                 >
                                                 <Grid item>
                                                     <span className={classes.cardTitle}>
-                                                        شیوه ارسال
+                                                         زمان ارسال سفارش
                                                     </span> 
                                                 </Grid>
                                                 </Grid>
@@ -557,9 +744,54 @@ const AddProductDialog = ({
                                         </Paper>
 
                                         <div style={{padding:"20px", width: "100%"}}>
-                                            <Grid container direction="column" justify="flex-start"  alignItems="stretch" spacing={3}>
+                                            <InputLabel id="time-description" style={{textAlign:'justify', fontSize:"0.9rem", lineHeight:"1.7rem"}}>
+                                                     توجه کنید زمان ارسال بدین معنی می باشد که محصول شما پس از دریافت سفارش از مشتری در چه مدت زمانی آماده ارسال می باشد، بدیهی است زمان دریافت محصول توسط مشتری به روش ارسال (پیک، پست ...) و همچنین زمانی که خود مشتری تعیین کرده است بستگی دارد
+                                            </InputLabel>
+
+                                            <InputLabel id="time-description" style={{textAlign:'justify', fontSize:"0.9rem", lineHeight:"1.7rem", marginTop:"10px" , marginBottom:"10px"}}>
+                                                    شما می توانید روش های ارسال ، ساعات ارسال در طول شبانه روز و همچنین روزهای کاری خود را در قسمت تنظیمات فروشگاه ثبت نمائید
+                                            </InputLabel>
+
+                                            <Grid container direction="column" justify="flex-start"  alignItems="stretch" spacing={1}>
                                                 <Grid item xs={12}>
-                                                   
+                                                <FormControl component="fieldset">                                              
+                                                    <RadioGroup aria-label="delivery-time" name="delivery-time" value={deliveryTimeOption} onChange={deliveryTimeOptionChanged}>
+                                                        <FormControlLabel value="instant" control={<Radio />} label="ارسال فوری" />
+                                                        <FormControlLabel value="today" control={<Radio />} label="ارسال در همان روز کاری" />
+                                                        <FormControlLabel value="future" control={<Radio />} label="ارسال در روزهای کاری بعد " />
+                                                    </RadioGroup>                                            
+                                                </FormControl>
+                                                </Grid>
+                                                {deliveryTimeOption === 'future' && (
+                                                    <Grid item xs={12}>
+                                                    <div style={{display:"inline-block", paddingTop:"10px"}}>
+                                                        ارسال در              
+                                                    </div>
+                                                  
+                                                    <FormControl style={{paddingLeft:"10px", paddingRight:"10px"}} >
+                                                            {/* <InputLabel id="future-days-label">روز</InputLabel> */}
+                                                            <Select
+                                                                labelId="future-days-label"
+                                                                // variant= "outlined"
+                                                                style={{textAlign:'center', minWidth:"50px", fontWeight:"800"}}
+                                                                id="future-days-id"
+                                                                value={futureDay}
+                                                                onChange={futureDayChanged}
+                                                             >
+                                                                {
+                                                                    futureDayList.map(item => (
+                                                                            <MenuItem value={item.value}>{item.text}</MenuItem>
+                                                                    ))
+                                                                }
+                                                            </Select>
+                                                    </FormControl> 
+                                                    روز کاری بعد                
+                                                </Grid>
+
+                                                )}
+                                                
+                                                <Grid item xs={12}>
+ 
                                                 </Grid>
                                             </Grid>
                                         </div>
@@ -618,17 +850,72 @@ const AddProductDialog = ({
 
                                         <div style={{padding:"20px", width: "100%"}}>
                                             <Grid container direction="column" justify="flex-start"  alignItems="stretch" spacing={3}>
+                                                <Grid item md={12} xl={9}>
+                                                    
+                                                    <Grid container direction="row" spacing={2} alignItems="flex-start">
+                                                            <Grid item xs={8}>
+                                                                <TextField 
+                                                                    error={false}
+                                                                    required id="product-hashtag" label="برچسب جدید" 
+                                                                    autoComplete="none" 
+                                                                    value = {newHashTag}
+                                                                    helperText="برچسب ها به جستجوی هدفمند محصول شما در فروشگاه و در سطح اینترنت کمک می نماید. لطفا در انتخاب برچسب ها دقت نمائید و فقط از کلمات مرتبط با محصول خود استفاده نمائید."
+                                                                    onChange = {newHashTagChanged} 
+                                                                    onKeyDown= {newHashTagPressed}
+                                                                    InputProps={{
+                                                                        startAdornment: <InputAdornment position="start">#</InputAdornment>,
+                                                                    }}
+                                                                />
+                                                            </Grid>  
+
+                                                            <Grid item xs={2} style={{paddingTop:"25px"}}>          
+                                                                <Tooltip title="اضافه کردن برچسب جدید">                                           
+                                                                    <IconButton 
+                                                                                color="secondary" 
+                                                                                aria-label="add new hashtag"
+                                                                                onClick={newHashTagClicked}
+                                                                                >
+                                                                            <AddCircleOutlineIcon style={{fontSize:"2rem", color: "#1ab509"}}/>
+                                                                    </IconButton>
+                                                                </Tooltip>
+
+                                                            </Grid>    
+
+                                                            <Grid item xs={2} style={{paddingTop:"25px"}}>          
+                                                                <Tooltip title="برگرداندن به حالت اولیه (برچسب های اولیه پست)">                                           
+                                                                    <IconButton 
+                                                                                color="default" 
+                                                                                aria-label="reset hashtags"
+                                                                                onClick={resetHashTagClicked}
+                                                                                >
+                                                                            <UndoIcon style={{fontSize:"2rem",color:"#e83a3a"}}/>
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            </Grid>   
+                                                    </Grid>
+                                                    
+                                                </Grid>
                                                 <Grid item xs={12}>
-                                                   
+                                                    <Grid container spacing={2}>
+                                                        { hashTags && hashTags.length > 0 && 
+                                                            hashTags.map((tag,index) => (
+                                                                <Grid item xs={12} sm>
+                                                                     <Chip
+                                                                        label={tag} 
+                                                                        variant="outlined"
+                                                                        onDelete={() => deleteHashTagAtIndex(index)}
+                                                                        />
+                                                                </Grid>
+                                                         ))
+                                                     }
+                                                    </Grid>
+                                                  
                                                 </Grid>
                                             </Grid>
                                         </div>
 
                                     </Paper>                
                             </Grid>
-
-
-
                     </Grid>
                 </Grid>
             </Grid>
