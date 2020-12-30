@@ -207,6 +207,10 @@ export default function Posts() {
     topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })  
   };
 
+  const newProductSaved = (product) =>
+  {
+      console.log(product)
+  }
 
 
   return (
@@ -332,7 +336,7 @@ export default function Posts() {
           )}
            
 
-      <AddProductDialog open={openAddProductDialog} handleClose={addproductDialogClosed} post={selectedPost} />
+      <AddProductDialog open={openAddProductDialog} handleClose={addproductDialogClosed} productSaved={newProductSaved} post={selectedPost} />
     </React.Fragment>
   );
 }

@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import Divider from "@material-ui/core/Divider";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -11,16 +10,15 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import PropTypes from "prop-types";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import {
+    Backdrop,
   Checkbox,
   Chip,
+  CircularProgress,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Grid,
   InputAdornment,
-  InputLabel,
   MenuItem,
   Paper,
   Radio,
@@ -40,37 +38,16 @@ import MuiAccordion from "@material-ui/core/Accordion";
 import MuiAccordionSummary from "@material-ui/core/AccordionSummary";
 import MuiAccordionDetails from "@material-ui/core/AccordionDetails";
 
+
 import { convertToPersian } from "./persian-numbers";
 
 import persianRex from "persian-rex";
 
 import { BrowserView, MobileView, isMobile } from "react-device-detect";
 
-const toolbarConfig = {
-  // Optionally specify the groups to display (displayed in the order listed).
-  display: [
-    "INLINE_STYLE_BUTTONS",
-    "BLOCK_TYPE_BUTTONS",
-    "LINK_BUTTONS",
-    "BLOCK_TYPE_DROPDOWN",
-    "HISTORY_BUTTONS",
-  ],
-  INLINE_STYLE_BUTTONS: [
-    { label: "Bold", style: "BOLD", className: "custom-css-class" },
-    { label: "Italic", style: "ITALIC" },
-    { label: "Underline", style: "UNDERLINE" },
-  ],
-  BLOCK_TYPE_DROPDOWN: [
-    { label: "Normal", style: "unstyled" },
-    { label: "Heading Large", style: "header-one" },
-    { label: "Heading Medium", style: "header-two" },
-    { label: "Heading Small", style: "header-three" },
-  ],
-  BLOCK_TYPE_BUTTONS: [
-    { label: "UL", style: "unordered-list-item" },
-    { label: "OL", style: "ordered-list-item" },
-  ],
-};
+import combineArrays from './CombineArrays';
+import GlobalState from "./GlobalState";
+import ProductService from "./services/ProductService";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -171,9 +148,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   ProductInfoCards: {
-    // [theme.breakpoints.between('xs', 'sm')]: {
-    //   marginTop: "200px"
-    // },
+
   },
 
   RichTextEditor: {
@@ -188,6 +163,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
+
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+
 }));
 
 function NumberFormatCustom(props) {
@@ -277,6 +258,7 @@ const AddProductDialog = ({
   post,
 }) => {
   const classes = useStyles();
+  const [state, setState] = React.useContext(GlobalState);
 
   const [futureDayList, setFutureDayList] = React.useState([]);
 
@@ -287,6 +269,27 @@ const AddProductDialog = ({
   const [productSizes, setProductSizes] = React.useState([]);
   const [productMaterials, setProductMaterials] = React.useState([]);
   const [productModels, setProductModels] = React.useState([]);
+
+  
+  const [variantPrices, setVariantPrices] = React.useState([]);
+ 
+  const [optionChanged, setOptionChanged] = React.useState(false);
+  
+  const [filter, setFilter] = React.useState("");
+  const filterChanged = (event) => {
+    setFilter(event.target.value);
+  };
+  const removeFilter = () => {
+    setFilter("");
+  };
+
+
+  const [hasDifferentPrices, setHasDifferentPrices] = React.useState(false);
+  const hasDifferentPricesChanged = (event) =>
+  {
+      setHasDifferentPrices(event.target.checked)
+  }
+
 
   const [productTitle, setProductTitle] = React.useState("");
   const productTitleChanged = (event) => {
@@ -380,6 +383,8 @@ const AddProductDialog = ({
     setNewModel(event.target.value);
   };
 
+  const [saving, setSaving] = React.useState(false) 
+
   React.useEffect(() => {
     const loadPostImages = async () => {
       try {
@@ -428,6 +433,11 @@ const AddProductDialog = ({
     handleClose();
   };
 
+  const _productSaved = (product) => {
+    _handleClose();
+    productSaved(product)
+  };
+
   const cancelClicked = () => {
     if (productCanceled) productCanceled(post);
 
@@ -435,11 +445,7 @@ const AddProductDialog = ({
   };
 
   const saveClicked = () => {
-    setTimeout(() => {
-      if (productSaved) productSaved(post);
-
-      _handleClose();
-    }, 1000);
+    submitForm()
   };
 
   const deleteHashTagAtIndex = (index) => {
@@ -449,6 +455,13 @@ const AddProductDialog = ({
       setHashTags(temp);
     }
   };
+
+  const deleteVariantProductAtIndex = (index) =>
+  {
+    let temp = [...variantPrices];
+    temp.splice(index, 1);
+    setVariantPrices(variantPrices);
+  }
 
   const newHashTagPressed = (event) => {
     if (event.key === "Enter") {
@@ -479,6 +492,7 @@ const AddProductDialog = ({
       if (newColor && newColor.trim().length > 0) {
         if (!productColors.find((e) => e.trim() === newColor.trim())) {
           productColors.splice(0, 0, newColor.trim());
+          setOptionChanged(!optionChanged)
         }
 
         setNewColor("");
@@ -490,6 +504,7 @@ const AddProductDialog = ({
     if (newColor && newColor.trim().length > 0) {
       if (!productColors.find((e) => e.trim() === newColor.trim())) {
         productColors.splice(0, 0, newColor.trim());
+        setOptionChanged(!optionChanged)
       }
 
       setNewColor("");
@@ -500,6 +515,7 @@ const AddProductDialog = ({
     if (productColors && productColors[index]) {
       let temp = [...productColors];
       temp.splice(index, 1);
+      setOptionChanged(!optionChanged)
       setProductColors(temp);
     }
   };
@@ -509,6 +525,7 @@ const AddProductDialog = ({
       if (newSize && newSize.trim().length > 0) {
         if (!productSizes.find((e) => e.trim() === newSize.trim())) {
           productSizes.splice(0, 0, newSize.trim());
+          setOptionChanged(!optionChanged)
         }
 
         setNewSize("");
@@ -520,6 +537,7 @@ const AddProductDialog = ({
     if (newSize && newSize.trim().length > 0) {
       if (!productSizes.find((e) => e.trim() === newSize.trim())) {
         productSizes.splice(0, 0, newSize.trim());
+        setOptionChanged(!optionChanged)
       }
 
       setNewSize("");
@@ -531,6 +549,7 @@ const AddProductDialog = ({
       let temp = [...productSizes];
       temp.splice(index, 1);
       setProductSizes(temp);
+      setOptionChanged(!optionChanged)
     }
   };
 
@@ -539,6 +558,7 @@ const AddProductDialog = ({
       if (newMaterial && newMaterial.trim().length > 0) {
         if (!productMaterials.find((e) => e.trim() === newMaterial.trim())) {
           productMaterials.splice(0, 0, newMaterial.trim());
+          setOptionChanged(!optionChanged)
         }
 
         setNewMaterial("");
@@ -550,6 +570,7 @@ const AddProductDialog = ({
     if (newMaterial && newMaterial.trim().length > 0) {
       if (!productMaterials.find((e) => e.trim() === newMaterial.trim())) {
         productMaterials.splice(0, 0, newMaterial.trim());
+        setOptionChanged(!optionChanged)
       }
 
       setNewMaterial("");
@@ -561,6 +582,7 @@ const AddProductDialog = ({
       let temp = [...productMaterials];
       temp.splice(index, 1);
       setProductMaterials(temp);
+      setOptionChanged(!optionChanged)
     }
   };
 
@@ -569,6 +591,7 @@ const AddProductDialog = ({
       if (newModel && newModel.trim().length > 0) {
         if (!productModels.find((e) => e.trim() === newModel.trim())) {
           productModels.splice(0, 0, newModel.trim());
+          setOptionChanged(!optionChanged)
         }
 
         setNewModel("");
@@ -580,6 +603,7 @@ const AddProductDialog = ({
     if (newModel && newModel.trim().length > 0) {
         if (!productModels.find((e) => e.trim() === newModel.trim())) {
           productModels.splice(0, 0, newModel.trim());
+          setOptionChanged(!optionChanged)
         }
 
         setNewModel("");
@@ -591,8 +615,179 @@ const AddProductDialog = ({
       let temp = [...productModels];
       temp.splice(index, 1);
       setProductModels(temp);
+      setOptionChanged(!optionChanged)
     }
   };
+
+  const buildVariantPricesArray = () =>
+  {
+      const arrayOfArrays = [];
+      if (productColors.length > 0)
+      {
+          arrayOfArrays.push({option:'color', array: [...productColors]});
+      }
+      if (productSizes.length > 0)
+      {
+        arrayOfArrays.push({option:'size', array: [...productSizes]});
+      }
+      if (productMaterials.length > 0)
+      {
+        arrayOfArrays.push({option:'material', array: [...productMaterials]});
+      }
+      if (productModels.length > 0)
+      {
+        arrayOfArrays.push({option:'model', array: [...productModels]});
+      }
+    // console.log('ssssssss')
+    //  const temp = combine([productColors,productSizes,productMaterials,productModels]); 
+    //  console.log(temp);
+
+    const temp = combineArrays(arrayOfArrays)
+
+    const temp2 = []
+    temp.forEach(item => {
+        const itemSplit = item.split('/')
+        const tempItem = {}
+        arrayOfArrays.forEach((array,index) => {
+            tempItem[`${array.option}`] = itemSplit[index+1]
+        })
+
+        temp2.push(tempItem)
+
+    })
+
+    const tempVariants = [];
+    temp2.forEach((item,index) => {
+        tempVariants.push({bundle: item,  price: productPrice, priceAfterDiscount: productPriceAfterDiscount, inStock: (index === 0 ? inStock : 0)})
+    })
+
+    setVariantPrices([...tempVariants]);
+  }
+
+
+  const setProductVariantPrice = (index, price) =>
+  {
+      const temp = [...variantPrices]
+      temp[index].price = price
+      setVariantPrices(temp)
+  }
+
+
+  const setProductVariantPriceAfterDiscount = (index, price) =>
+  {
+    const temp = [...variantPrices]
+    temp[index].priceAfterDiscount = price
+    setVariantPrices(temp)   
+  }
+
+  const setProductVariantInStock= (index, count) =>
+  {
+    const temp = [...variantPrices]
+    temp[index].inStock = count
+    setVariantPrices(temp)
+  }
+
+  const getProductVariantPrice = (index) =>
+  {
+      return variantPrices[index].price
+  }
+
+  const getProductVariantPriceAfterDiscount = (index) =>
+  {
+      return variantPrices[index].priceAfterDiscount
+  }
+
+  const getProductVariantInStock = (index) =>
+  {
+      return variantPrices[index].inStock
+  }
+
+
+  const bundleToString = (bundle) =>
+  {
+    let str = `${bundle.color ? (bundle.color + ' / ') : ''}${bundle.size ? (bundle.size + ' / ') : ''}${bundle.material ? (bundle.material + ' / ') : ''}${bundle.model ? bundle.model : ''}`
+    if (str.endsWith('/ '))
+    {
+        str = str.substr(0,str.length - 2)
+    }
+
+    if (str.startsWith(' /'))
+    {
+        str = str.substr(2,str.length - 1)
+    }
+
+   
+    return str
+  }
+
+  const getHighlightedText = (text, highlight) => {
+    // Split text on highlight term, include term itself into parts, ignore case
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    return <span style={{color: '#922c88', fontWeight:"500"}}>{parts.map(part => part.toLowerCase() === highlight.toLowerCase() ? <span style={{backgroundColor:'#ffffc2'}}>{part}</span> : part)}</span>;
+}
+
+
+
+  useEffect( () => 
+  {
+      buildVariantPricesArray();
+
+  }, [optionChanged])
+
+
+  const submitForm = () =>
+  {
+
+      const product = {
+          shopId: state.shopId,
+          postId: post.id,
+          title: productTitle.trim(),
+          variant: JSON.stringify(variantPrices),
+          description: productDescription.trim(),
+          keywords: buildStringFromHashtags(hashTags),
+          price: productPrice,
+          priceAfterDiscount: productPriceAfterDiscount || null,
+          inStock: trackQuantity ? inStock : -1,
+          trackQuantity: trackQuantity,
+          continueSelling: continueSelling,
+          SKUCode: productSKUCode || '',
+          barCode: productBarCode || '',
+          deliveryTime: buildDeliveryTime(),
+          imageUrl: post.imageUrl,
+          imageUrlSmall: post.imageUrlSmall
+      }
+
+      setSaving(true)
+
+      ProductService.addProduct(product).then( (res) => {
+          setSaving(false)
+          console.log(res);
+          if (res.data.status === 'OK')
+          {
+              _productSaved(product)
+          }
+
+      }).catch(err => {
+          console.error(err)
+          setSaving(false)
+      })
+
+  }
+
+const buildDeliveryTime = () =>
+{
+    switch (deliveryTimeOption)
+    {
+        case 'instant':
+            return 0
+        case 'today':
+            return 1
+        case 'future':
+            return futureDay
+        default:
+            return -1        
+    }
+}
 
 
   return (
@@ -1199,10 +1394,6 @@ const AddProductDialog = ({
                                     </Grid>
                                   </div>
                                 </Grid>
-
-                                <Grid item xs={12}></Grid>
-
-                                <Grid item xs={12}></Grid>
                               </Grid>
                             </AccordionDetails>
                           </Accordion>
@@ -1322,10 +1513,6 @@ const AddProductDialog = ({
                                     </Grid>
                                   </div>
                                 </Grid>
-
-                                <Grid item xs={12}></Grid>
-
-                                <Grid item xs={12}></Grid>
                               </Grid>
                             </AccordionDetails>
                           </Accordion>
@@ -1448,10 +1635,6 @@ const AddProductDialog = ({
                                     </Grid>
                                   </div>
                                 </Grid>
-
-                                <Grid item xs={12}></Grid>
-
-                                <Grid item xs={12}></Grid>
                               </Grid>
                             </AccordionDetails>
                           </Accordion>
@@ -1571,14 +1754,178 @@ const AddProductDialog = ({
                                     </Grid>
                                   </div>
                                 </Grid>
-
-                                <Grid item xs={12}></Grid>
-
-                                <Grid item xs={12}></Grid>
                               </Grid>
                             </AccordionDetails>
                           </Accordion>
                         </div>
+                        
+                        <div style={{width:"100%", paddingRight:"20px",paddingBottom:"20px"}} >
+                            <FormControlLabel
+                                disabled = {!variantPrices || variantPrices.length < 2}
+                                control={
+                                <Checkbox
+                                    color="secondary"
+                                    name="has-different-prices"
+                                    checked={hasDifferentPrices}
+                                    onChange={hasDifferentPricesChanged}
+                                />
+                                }
+                                label={
+                                <span style={{ fontSize: "0.8rem" }}>
+                                    {`قیمت گذاری و انبارگردانی بر اساس ویژگی های محصول`}
+                                </span>
+                                }
+                            />
+                        </div>
+
+                        <div hidden={!hasDifferentPrices} style={{paddingBottom:"20px", paddingLeft:"20px", paddingRight:"20px", width:"100%"}}>
+                            <div hidden={!variantPrices || variantPrices.length < 10} style={{paddingBottom:"20px"}}>
+                                <TextField
+                                                    variant="outlined"
+                                                    style={{marginBottom : "5px"}}
+                                                    value={filter}
+                                                    onChange={filterChanged}
+                                                    margin="normal"
+                                                    size="small"
+                                                    id="filter"
+                                                    label="فیلتر"
+                                                    name="filter"
+                                                    helperText="برای اینکه ردیف های مورد نظر خود را راحت تر پیدا کنید واژه مورد نظر خود را در کادر بالا تایپ نمائید"
+                                                    autoComplete="off"
+                                                    InputProps={{
+                                                        endAdornment : 
+                                                            <InputAdornment position="end">
+                                                                <Tooltip title="پاک کردن فیلتر">
+                                                                            <IconButton
+                                                                            aria-label="remove filter"
+                                                                            onClick={() => removeFilter()}
+                                                                            onMouseDown={() => removeFilter()}
+                                                                        >
+                                                                            <CloseIcon/>
+                                                                        </IconButton>
+                                                                </Tooltip>
+                                                            
+                                                            </InputAdornment>
+                                                          
+                                                    }}
+                                                   
+                                                />
+                            </div>
+
+                            <Grid
+                            container
+                            direction="column"
+                            justify="flex-start"
+                            alignItems="stretch"
+                            spacing = {1}
+                            >
+                                {variantPrices.map((variant, index) => {
+
+                                        if ( (variantPrices && variantPrices.length > 1) && (!filter || filter.trim().length < 1 || variantPrices?.length < 10 || bundleToString(variant.bundle).indexOf(filter.trim()) >= 0) )
+                                        {
+                                            return (
+                                                
+
+                                                    <Grid item>
+                                                        <div style={{padding:"20px", width:"100%", borderTop:"1px solid #ddd"}}>
+                                                            <Grid
+                                                                container
+                                                                direction="row"
+                                                                justify="flex-start"
+                                                                alignItems="center"
+                                                                spacing={2}
+                                                            >
+                                                                <Grid item>
+                                                                    {getHighlightedText(bundleToString(variant.bundle), filter.trim())}
+                                                                </Grid>
+
+                                                                <Grid item>
+                                                                    <TextField
+                                                                            label="قیمت ( بر حسب تومان )"
+                                                                            value={getProductVariantPrice(index)}
+                                                                            size= "small"
+                                                                            variant="outlined"
+                                                                            required
+                                                                            onChange={(event) => setProductVariantPrice(index, event.target.value)}
+                                                                           // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
+                                                                            name={`product-price-${index}`}
+                                                                            id={`product-price-id-${index}`}
+                                                                            InputProps={{
+                                                                            inputComponent: NumberFormatCustom,
+                                                                            }}
+                                                                        />
+                                                                </Grid>
+                                                                <Grid item>
+                                                                    <TextField
+                                                                            label="قیمت بعد از تخفیف"
+                                                                            value={getProductVariantPriceAfterDiscount(index)}
+                                                                            size= "small"
+                                                                            fullWidth
+                                                                            variant="outlined"
+                                                                            
+                                                                            onChange={(event) => setProductVariantPriceAfterDiscount(index, event.target.value)}
+                                                                           // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
+                                                                            name={`product-price-after-discount-${index}`}
+                                                                            id={`product-price-after-discount-id-${index}`}
+                                                                            InputProps={{
+                                                                            inputComponent: NumberFormatCustom,
+                                                                            }}
+                                                                        />
+                                                                </Grid>
+                                                                {trackQuantity && (
+                                                                    <Grid item>
+                                                                    <TextField
+                                                                            label="موجودی"
+                                                                            value={getProductVariantInStock(index)}
+                                                                            size= "small"
+                                                                            fullWidth
+                                                                            variant="outlined"
+                                                                            
+                                                                            onChange={(event) => setProductVariantInStock(index, event.target.value)}
+                                                                           // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
+                                                                            name={`product-instock-discount-${index}`}
+                                                                            id={`product-instock-id-${index}`}
+                                                                            InputProps={{
+                                                                            inputComponent: NumberFormatCustom,
+                                                                            }}
+                                                                        />
+                                                                      </Grid>
+                                                                )}
+
+                                                                {/* <Grid item xs={1} style={{ paddingTop: "0px" }}>
+                                                                    <Tooltip title="حذف این گزینه">
+                                                                        <IconButton
+                                                                        color="secondary"
+                                                                        aria-label="add new hashtag"
+                                                                        onClick={() => deleteVariantProductAtIndex(index)}
+                                                                        >
+                                                                        <HighlightOffIcon
+                                                                            style={{ fontSize: "2rem" , color:"#ba0000"}}
+                                                                        />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                </Grid> */}
+                                                                
+
+                                                            </Grid>                                                          
+                                                        </div>
+                                                    </Grid>
+
+
+                                                 
+                                            )
+                                        }
+                                        else
+                                        {
+                                            return null
+                                        }
+                                })}
+
+                           </Grid> 
+
+
+                        </div>
+
                       </Paper>
                     </Grid>
 
@@ -1682,7 +2029,17 @@ const AddProductDialog = ({
                 </Grid>
               </Grid>
             </div>
+
+            <Backdrop
+                className={classes.backdrop}
+                open={saving}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
           </Dialog>
+
+           
+
         </React.Fragment>
       )}
     </>
@@ -1699,6 +2056,16 @@ function getImages(postImages) {
   return result;
 }
 
+function buildStringFromHashtags(hashTags)
+{
+    let keywords = ''
+    hashTags.forEach(tag => {
+        keywords += `${tag.substr(1)},`
+    })
+
+    return keywords
+}
+
 AddProductDialog.propTypes = {
   open: PropTypes.any.isRequired,
   handleClose: PropTypes.func.isRequired,
@@ -1706,5 +2073,7 @@ AddProductDialog.propTypes = {
   productCanceled: PropTypes.func,
   post: PropTypes.object,
 };
+
+
 
 export default AddProductDialog;
