@@ -119,7 +119,7 @@ export default function SignIn() {
       setSubmiting(true)
 
       UserService.signIn({
-        email: username,
+        userId: username,
         password: password
       }).then( res => {
 

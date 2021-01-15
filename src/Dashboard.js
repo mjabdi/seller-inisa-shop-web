@@ -166,8 +166,8 @@ export default function Dashboard() {
 
   const handleLogout = () =>
   {
-    localStorage.removeItem('inisa-auth-token');
-    sessionStorage.removeItem('inisa-auth-token');
+    localStorage.removeItem('app-auth-token');
+    sessionStorage.removeItem('app-auth-token');
     setState(state => ({...state, signedIn: false}));
     history.replace('./login');
   }
