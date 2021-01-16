@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
-    color: "#111"
+    color: "#fff"
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -134,7 +134,9 @@ export default function SignIn() {
             sessionStorage.setItem("app-auth-token", token)
           }
 
-          setState((state) => ({ ...state, signedIn: true }))
+          setState((state) => ({ ...state, signedIn: true}))
+
+
           history.push(`/${getMenuId(0)}`)
         }
         else if (res.data.status === 'FAILED')
@@ -268,12 +270,12 @@ export default function SignIn() {
             </Button>
             <Grid container spacing={3} direction="row" justify="center" alignItems="space-between">
               <Grid item xs={12} md={6}  style={{textAlign:"center"}}>
-                <Link href="/forgotpassword" variant="body2">
+                <Link color="secondary" href="/forgotpassword" variant="body2">
                   رمز عبور خود را فراموش کرده ام
                 </Link>
               </Grid>
               <Grid item xs={12} md={6} style={{textAlign:"center"}}>
-                <Link href="/signup" variant="body2">
+                <Link  color="secondary" href="/signup" variant="body2">
                   تا حالا ثبت نام نکرده اید؟ ثبت نام کنید
                 </Link>
               </Grid>

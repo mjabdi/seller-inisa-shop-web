@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
-    color:"#111"
+    color:"#fff"
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -84,7 +84,9 @@ const useStyles = makeStyles((theme) => ({
 
   timeLeft: {
     color: theme.palette.secondary.main,
-    backgroundColor: "#333",
+    // backgroundColor: "#333",
+    border: "1px solid",
+    borderColor: "#ccc",
     borderRadius : "5px",
     marginLeft: theme.spacing(1),
     padding: "2px",
@@ -93,11 +95,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "500",
   },
 
-  timeLeftThin: {
-    color: "#d12c2c",
-    // marginLeft: theme.spacing(1),
-    fontWeight: "500",
-  },
+ 
 }));
 
 const timeFormat = (num) => {
@@ -408,30 +406,38 @@ export default function SignUp() {
                     </Grid>
                   )}
 
-                  {timeLeft === 0 && (
-                    <Grid item>
+                {timeLeft === 0 && (
+                    <Grid item xs={12} sm={8}>
                       <div className={classes.alert}>
                         <Alert severity="error">
                           {" "}
-                          <div style={{ lineHeight: "1.5rem", textAlign: "justify", color:"#333" }}>
-                          کد ارسال شده منقضی شد !
+                          <div
+                            style={{
+                              lineHeight: "1.5rem",
+                              textAlign: "justify",
+                              color: "#333",
+                            }}
+                          >
+                            کد ارسال شده منقضی شد !
                           </div>
                         </Alert>
                       </div>
                     </Grid>
                   )}
 
-                  <Grid item xs>
-                    <Button
-                      size="small"
-                      disabled={timeLeft > 0}
-                      style={{padding:"10px"}}
-                      variant="contained"
-                      color="secondary"
-                      onClick={preSignUp}
-                    >
-                      ارسال کد جدید
-                    </Button>
+                  <Grid item xs={12} sm={4}>
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                      <Button
+                        size="small"
+                        disabled={timeLeft > 0}
+                        style={{ padding: "10px", color: "#fff" }}
+                        variant="contained"
+                        color="secondary"
+                        onClick={preSignUp}
+                      >
+                        ارسال کد جدید
+                      </Button>
+                    </div>
                   </Grid>
                 </Grid>
               </div>
@@ -612,7 +618,7 @@ export default function SignUp() {
             {successfullyFinished && (
               <Grid item xs={12}>
                 <div style={{ width: "100%", textAlign: "center" }}>
-                  <Link href="/login" variant="body2">
+                  <Link  color="secondary" href="/login" variant="body2">
                     {"برگشت به صفحه ورود به سیستم"}
                   </Link>
                 </div>
@@ -621,7 +627,7 @@ export default function SignUp() {
 
             {!successfullyFinished && (
               <Grid item>
-                <Link href="/login" variant="body2">
+                <Link color="secondary" href="/login" variant="body2">
                   {"قبلا ثبت نام کرده اید؟ ورود به سیستم"}
                 </Link>
               </Grid>

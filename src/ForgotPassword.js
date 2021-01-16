@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
-    color: "#111"
+    color: "#fff"
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -85,7 +85,9 @@ const useStyles = makeStyles((theme) => ({
 
   timeLeft: {
     color: theme.palette.secondary.main,
-    backgroundColor: "#333",
+    // backgroundColor: "#333",
+    border: "1px solid",
+    borderColor: "#ccc",
     borderRadius : "5px",
     marginLeft: theme.spacing(1),
     padding: "2px",
@@ -94,11 +96,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "500",
   },
 
-  timeLeftThin: {
-    color: "#d12c2c",
-    // marginLeft: theme.spacing(1),
-    fontWeight: "500",
-  },
+
 }));
 
 const timeFormat = (num) => {
@@ -209,7 +207,7 @@ export default function ForgotPassword() {
     return !error;
   };
 
-  const MAX_TIME_OUT = 10 * 60; //seconds
+  const MAX_TIME_OUT = 2 * 60; //seconds
   const initTimer = () => {
     setTimeLeft(MAX_TIME_OUT);
     const timer = setInterval(() => {
@@ -405,7 +403,7 @@ export default function ForgotPassword() {
                   )}
 
                   {timeLeft === 0 && (
-                    <Grid item>
+                    <Grid item xs={12} sm={8}>
                       <div className={classes.alert}>
                         <Alert severity="error">
                           {" "}
@@ -423,17 +421,19 @@ export default function ForgotPassword() {
                     </Grid>
                   )}
 
-                  <Grid item xs>
-                    <Button
-                      size="small"
-                      disabled={timeLeft > 0}
-                      fullWidth
-                      variant="outlined"
-                      color="primary"
-                      onClick={sendForgotPasswordEmail}
-                    >
-                      ارسال کد جدید
-                    </Button>
+                  <Grid item xs={12} sm={4}>
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                      <Button
+                        size="small"
+                        disabled={timeLeft > 0}
+                        style={{ padding: "10px", color: "#fff" }}
+                        variant="contained"
+                        color="secondary"
+                        onClick={sendForgotPasswordEmail}
+                      >
+                        ارسال کد جدید
+                      </Button>
+                    </div>
                   </Grid>
                 </Grid>
               </div>
@@ -603,7 +603,7 @@ export default function ForgotPassword() {
             {successfullyFinished && (
               <Grid item xs={12}>
                 <div style={{ width: "100%", textAlign: "center" }}>
-                  <Link href="/login" variant="body2">
+                  <Link  color="secondary" href="/login" variant="body2">
                     {"برگشت به صفحه ورود به سیستم"}
                   </Link>
                 </div>
@@ -612,7 +612,7 @@ export default function ForgotPassword() {
 
             {!successfullyFinished && (
               <Grid item xs={12} style={{ width: "100%", textAlign: "right" }}>
-                <Link href="/login" variant="body2">
+                <Link color="secondary" href="/login" variant="body2">
                   {"برگشت به صفحه ورود به سیستم"}
                 </Link>
               </Grid>

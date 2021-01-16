@@ -100,7 +100,7 @@ export default function Navigator() {
            }
            else
            {
-             setState(state => ({...state, signedIn: true, userId: userId}));
+             setState(state => ({...state, signedIn: true, userId: userId,  shopId: "5928695217"}));
            }
 
            setLoaded(true)

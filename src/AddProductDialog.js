@@ -52,6 +52,8 @@ import ProductService from "./services/ProductService";
 const useStyles = makeStyles((theme) => ({
   appBar: {
     position: "fixed",
+    color: theme.palette.secondary.main,
+    backgroundColor: "#fff",
   },
 
   appBarProduct: {
@@ -147,9 +149,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  ProductInfoCards: {
-
-  },
+  ProductInfoCards: {},
 
   RichTextEditor: {
     fontFamily: "IRANSans",
@@ -166,8 +166,25 @@ const useStyles = makeStyles((theme) => ({
 
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+    color: "#fff",
   },
+
+  futureDaysLabel: {
+    textAlign: "center",
+    minWidth: "50px",
+    fontWeight: "800",
+    color: theme.palette.secondary.main,
+  },
+
+  variantLabels: {
+    marginRight: "10px",
+    color: theme.palette.secondary.main,
+  },
+
+  variantTupleLabel: {
+    fontWeight: "500",
+    color: theme.palette.secondary.main,
+  }
 
 }));
 
@@ -723,7 +740,7 @@ const AddProductDialog = ({
   const getHighlightedText = (text, highlight) => {
     // Split text on highlight term, include term itself into parts, ignore case
     const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-    return <span style={{color: '#922c88', fontWeight:"500"}}>{parts.map(part => part.toLowerCase() === highlight.toLowerCase() ? <span style={{backgroundColor:'#ffffc2'}}>{part}</span> : part)}</span>;
+    return <span className={classes.variantTupleLabel}>{parts.map(part => part.toLowerCase() === highlight.toLowerCase() ? <span style={{backgroundColor:'#ffffc2'}}>{part}</span> : part)}</span>;
 }
 
 
@@ -830,8 +847,9 @@ const buildDeliveryTime = () =>
                   </Grid>
                 </Typography>
                 <Button
-                  variant="outlined"
-                  color="inherit"
+                  variant="contained"
+                  style={{color:"#fff"}}
+                  color="secondary"
                   onClick={saveClicked}
                 >
                   ذخیره
@@ -1217,12 +1235,8 @@ const buildDeliveryTime = () =>
                                   <Select
                                     labelId="future-days-label"
                                     // variant= "outlined"
-                                    style={{
-                                      textAlign: "center",
-                                      minWidth: "50px",
-                                      fontWeight: "800",
-                                      color: "#922c88"
-                                    }}
+                                    color="secondary"
+                                    className={classes.futureDaysLabel}
                                     id="future-days-id"
                                     value={futureDay}
                                     onChange={futureDayChanged}
@@ -1292,7 +1306,7 @@ const buildDeliveryTime = () =>
                             
                             {
                                 productColors.map( (tag,index) => (
-                                    <span style={{marginRight:"10px", color: "#922c88"}}>
+                                    <span className={classes.variantLabels}>
                                         {index === 0 ? '( ' : ''}
                                          {tag}
                                          {index === (productColors.length - 1) ? ' )' : ' , '} 
@@ -1412,7 +1426,7 @@ const buildDeliveryTime = () =>
 
                               {
                                 productSizes.map( (tag,index) => (
-                                    <span style={{marginRight:"10px", color: "#922c88"}}>
+                                    <span className={classes.variantLabels}>
                                         {index === 0 ? '( ' : ''}
                                          {tag}
                                          {index === (productSizes.length - 1) ? ' )' : ' , '} 
@@ -1530,7 +1544,7 @@ const buildDeliveryTime = () =>
                               </Typography>
                               {
                                 productMaterials.map( (tag,index) => (
-                                    <span style={{marginRight:"10px", color: "#922c88"}}>
+                                    <span  className={classes.variantLabels}>
                                         {index === 0 ? '( ' : ''}
                                          {tag}
                                          {index === (productMaterials.length - 1) ? ' )' : ' , '} 
@@ -1653,7 +1667,7 @@ const buildDeliveryTime = () =>
 
                               {
                                 productModels.map( (tag,index) => (
-                                    <span style={{marginRight:"10px", color: "#922c88"}}>
+                                    <span className={classes.variantLabels}>
                                         {index === 0 ? '( ' : ''}
                                          {tag}
                                          {index === (productModels.length - 1) ? ' )' : ' , '} 

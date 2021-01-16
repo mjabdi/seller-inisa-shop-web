@@ -3,7 +3,7 @@ import { faIR } from '@material-ui/core/locale';
 
 // colors
 const primary = "#111";
-const secondary = "#ffd700";
+const secondary = "#31cc8f";
 const black = "#353535";
 const darkBlack = "rgb(36, 40, 44)";
 const background = "#f5f5f5";

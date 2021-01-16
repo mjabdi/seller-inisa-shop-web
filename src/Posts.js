@@ -260,7 +260,7 @@ export default function Posts() {
                     <Button size="small" color="primary">
                       مشاهده جزئیات
                     </Button>
-                    <Button variant="outlined" size="small" color="primary" onClick={() => addProductClicked(post)}>
+                    <Button variant="outlined" size="small" color="secondary" onClick={() => addProductClicked(post)}>
                       تعریف محصول
                     </Button>
 
@@ -270,14 +270,14 @@ export default function Posts() {
                       color="primary"
                       onClick={() => setShowCaption(!showCaption)}
                     >
-                      <Tooltip title= {!showCaption? "مشاهده متن" : "پنهان کردن متن" }>
+                      {/* <Tooltip title= {!showCaption? "مشاهده متن" : "پنهان کردن متن" }> */}
                         {!showCaption ? 
                             <ExpandMoreIcon/>
                         : 
                             <ExpandLessIcon/>
                         }
                        
-                      </Tooltip>
+                      {/* </Tooltip> */}
                     </IconButton>
 
 
@@ -331,7 +331,7 @@ export default function Posts() {
                 aria-label="scroll back to top"
                 onClick={() => scrollToTop()}
                 >
-                <KeyboardArrowUpIcon />
+                <KeyboardArrowUpIcon style={{color:"#fff"}} />
             </Fab>
           )}
            
