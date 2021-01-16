@@ -182,7 +182,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   variantTupleLabel: {
-    fontWeight: "500",
+    fontWeight: "400",
     color: theme.palette.secondary.main,
   }
 
@@ -739,7 +739,7 @@ const AddProductDialog = ({
 
   const getHighlightedText = (text, highlight) => {
     // Split text on highlight term, include term itself into parts, ignore case
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    const parts = text.split(new RegExp(`(${highlight})`, 'ui'));
     return <span className={classes.variantTupleLabel}>{parts.map(part => part.toLowerCase() === highlight.toLowerCase() ? <span style={{backgroundColor:'#ffffc2'}}>{part}</span> : part)}</span>;
 }
 
