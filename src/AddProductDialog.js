@@ -217,7 +217,7 @@ NumberFormatCustom.propTypes = {
 };
 
 function getTagsFromCaption(caption) {
-  const result = caption.split(" ").filter((v) => v.startsWith("#"));
+  const result = caption.split(" ").filter((v) => v.startsWith("#") && v.substr(1).indexOf("#") < 0);
   return result;
 }
 
@@ -875,9 +875,11 @@ const buildDeliveryTime = () =>
 
               <div className={classes.CaptionBox}>
                 <Paper elevation={8} className={classes.paper}>
-                  {post.caption.length > 0
-                    ? post.caption
-                    : "متنی برای این پست وجود ندارد"}
+                  <div style={{width:"100%", lineHeight:"2rem",  overflowWrap:"break-word"}}> 
+                    {post.caption.length > 0
+                      ? post.caption
+                      : "متنی برای این پست وجود ندارد"}
+                  </div>            
                 </Paper>
               </div>
 
@@ -1849,7 +1851,7 @@ const buildDeliveryTime = () =>
                                                                 alignItems="center"
                                                                 spacing={2}
                                                             >
-                                                                <Grid item>
+                                                                <Grid item xs={12}>
                                                                     {getHighlightedText(bundleToString(variant.bundle), filter.trim())}
                                                                 </Grid>
 
@@ -1943,7 +1945,7 @@ const buildDeliveryTime = () =>
                       </Paper>
                     </Grid>
 
-                    <Grid item>
+                    <Grid item style={{width: "100%"}}>
                       <Paper elevation={8} className={classes.form}>
                         <Paper elevation={0} className={classes.appBarProduct}>
                           <Toolbar>
