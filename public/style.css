@@ -21,6 +21,7 @@ a {
   font-style: thin;
   font-weight: 100;
   font-display: swap;
+  unicode-range: U+00-FFFF;
 }
 
 @font-face {
@@ -29,6 +30,7 @@ a {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
+  unicode-range: U+00-FFFF;
 }
 @font-face {
   font-family: "IRANSans";
@@ -36,6 +38,7 @@ a {
   font-style: medium;
   font-weight: 500;
   font-display: swap;
+  unicode-range: U+00-FFFF;
 }
 
 @font-face {
@@ -44,4 +47,5 @@ a {
   font-style: bold;
   font-weight: 700;
   font-display: swap;
+  unicode-range: U+00-FFFF;
 }
