@@ -14,18 +14,22 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { ExitToAppOutlined } from '@material-ui/icons';
+import { Directions, ExitToAppOutlined } from '@material-ui/icons';
 import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
 
 
 
-import { Tooltip } from '@material-ui/core';
+
+import { Avatar, Badge, Grid, Tooltip } from '@material-ui/core';
 import GlobalState from './GlobalState';
 import Menu from './Menu';
 import {getMenuContent, getMenuIndex} from './MenuList';
 
 import { useLocation, useHistory} from "react-router-dom";
+
+import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 
 
 function Copyright() {
@@ -121,6 +125,20 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+
+  userAvatar:
+  {
+    backgroundColor: "#fff",
+    borderColor: theme.palette.secondary.main,
+    border: "1px solid",
+    color: theme.palette.secondary.main,
+    cursor: "pointer",
+  },
+
+  appBarText:{
+    color: "#888",
+    cursor: "pointer",
+  }
 }));
 
 export default function Dashboard() {
@@ -192,7 +210,50 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
 
-          <Tooltip title="خروج">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              width: "100%",
+              paddingLeft: "2%",
+            }}
+          >
+            <Grid
+              container
+              spacing={2}
+              direction="row-reverse"
+              justify="flex-start"
+              alignItems="center"
+            >
+              <Grid item>
+                <Avatar className={classes.userAvatar}>
+                  <PersonOutlineIcon />
+                </Avatar>
+              </Grid>
+
+              <Grid item>
+                <span className={classes.appBarText}>
+                  {state.userId?.forename + " " + state.userId?.surname}
+                </span>
+              </Grid>
+
+              <Grid item>
+                <Badge 
+                  badgeContent={4} 
+                  color="error"
+                  style={{color: "#fff"}}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  >
+                  <NotificationsNoneIcon className={classes.appBarText} />
+                </Badge>
+              </Grid>
+            </Grid>
+          </div>
+
+          {/* <Tooltip title="خروج">
             <IconButton
               edge="end"
               color="inherit"
@@ -202,7 +263,7 @@ export default function Dashboard() {
             >
               <ExitToAppOutlined />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Toolbar>
       </AppBar>
 
@@ -223,25 +284,19 @@ export default function Dashboard() {
         <Menu />
       </Drawer>
 
-   
-
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth={isMobile ? 'xs' : 'xl'} className={classes.container}>
+        <Container
+          maxWidth={isMobile ? "xs" : "xl"}
+          className={classes.container}
+        >
+          {getMenuContent(currentMenuIndex)}
 
-             {getMenuContent(currentMenuIndex)}
-        
-          <Box pt={4}>
+          {/* <Box pt={4}>
             <Copyright />
-         </Box>   
-        
+          </Box> */}
         </Container>
-
-      
       </main>
-
-     
-
     </div>
   );
 }
