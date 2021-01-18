@@ -1,7 +1,6 @@
-
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import StorefrontIcon from '@material-ui/icons/Storefront';
 import InstagramIcon from '@material-ui/icons/Instagram';
-import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 import DashboardPreview from './DashboardPreview';
 import Posts from './Posts';
@@ -10,9 +9,9 @@ import Posts from './Posts';
 
 
 export const MenuList = [
-    {index: 0, id:`dashboard`, title: `داشبورد`, icon : <DashboardIcon style={{fontSize:"1.9rem"}}/>},
-    {index: 1, id:`posts`, title: `پست ها`, icon : <InstagramIcon style={{fontSize:"1.9rem"}}/>},
-    {index: 2, id:`products`, title: `محصولات`, icon : <ShoppingBasketIcon style={{fontSize:"1.9rem"}}/>},
+    {index: 0, id:`dashboard`, title: `داشبورد`, icon : <StorefrontIcon style={{fontSize:"2.2rem"}}/>},
+    {index: 1, id:`posts`, title: `پست ها`, icon : <InstagramIcon style={{fontSize:"2.2rem"}}/>},
+    {index: 2, id:`products`, title: `محصولات`, icon : <LocalOfferIcon style={{fontSize:"2.2rem"}}/>},
 
   ];
 

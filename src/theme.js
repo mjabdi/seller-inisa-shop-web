@@ -5,6 +5,7 @@ import { faIR } from '@material-ui/core/locale';
 const primary = "#111";
 const secondary = "#31cc8f";
 const black = "#353535";
+const white = "#fff"
 const darkBlack = "rgb(36, 40, 44)";
 const background = "#f5f5f5";
 // const warningLight = "rgba(253, 200, 69, .3)";
@@ -32,11 +33,13 @@ const theme = createMuiTheme({
   palette: {
 
     primary: { main: primary },
-    secondary: { main: secondary },
+    secondary: { main: secondary, light: "#ebf7f3" },
     common: {
+      white,
       black,
       darkBlack
     },
+    notification: {main: "#ff81a9"},
     // warning: {
     //   light: warningLight,
     //   main: warningMain,

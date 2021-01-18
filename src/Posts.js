@@ -26,6 +26,13 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 import AddProductDialog from './AddProductDialog';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 
 const useStyles = makeStyles((theme) => ({
@@ -82,6 +89,11 @@ const useStyles = makeStyles((theme) => ({
         width: 265,
       },
 
+      card_root_product: {
+        width: 265,
+        border: "2px solid red"
+      },
+
       FabScrollTop:{
         position: 'absolute',
         bottom: theme.spacing(4),
@@ -115,6 +127,16 @@ export default function Posts() {
 
   const [openAddProductDialog, setOpenAddProductDialog] = React.useState(false);
   const [selectedPost, setSelectedPost] = React.useState(null);
+
+  const [openSuccessAlert, setOpenSuccessAlert] = React.useState(false);
+
+  const handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSuccessAlert(false);
+  };
   
   useEffect( () => 
   {
@@ -207,10 +229,14 @@ export default function Posts() {
     topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })  
   };
 
-  const newProductSaved = (product) =>
-  {
-      console.log(product)
-  }
+  const newProductSaved = (product) => {
+    const post = feeds.find((post) => post.id === product.postId);
+    post.productIds = [...post.productIds, product._id.toString()];
+
+    setOpenAddProductDialog(false);
+    setSelectedPost(null);
+    setOpenSuccessAlert(true);
+  };
 
 
   return (
@@ -234,7 +260,7 @@ export default function Posts() {
           >
             {feeds.map((post, index) => (
               <Grid key={`post-${index}`} item xl={3} lg={4} md={6} sm={12} xs={12}>
-                <Card className={classes.card_root}>
+                <Card className={post.productIds && post.productIds.length > 0 ? classes.card_root_product : classes.card_root }>
                   <CardActionArea>
                     <CardMedia
                       className={classes.media}
@@ -337,6 +363,12 @@ export default function Posts() {
            
 
       <AddProductDialog open={openAddProductDialog} handleClose={addproductDialogClosed} productSaved={newProductSaved} post={selectedPost} />
+
+      <Snackbar key="success-alert" anchorOrigin={{vertical:'bottom', horizontal:'center'}} open={openSuccessAlert} autoHideDuration={10000} onClose={handleAlertClose}>
+            <Alert style={{width:"90vw"}} onClose={handleAlertClose} severity="success">
+              محصول شما با موفقیت اضافه گردید
+            </Alert>
+          </Snackbar>
     </React.Fragment>
   );
 }

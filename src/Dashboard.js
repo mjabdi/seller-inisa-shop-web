@@ -19,11 +19,9 @@ import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
 
 
-
-
-import { Avatar, Badge, Grid, Tooltip } from '@material-ui/core';
+import { Avatar, Badge, Grid, Tooltip, withStyles } from '@material-ui/core';
 import GlobalState from './GlobalState';
-import Menu from './Menu';
+import MyMenu from './Menu';
 import {getMenuContent, getMenuIndex} from './MenuList';
 
 import { useLocation, useHistory} from "react-router-dom";
@@ -31,20 +29,59 @@ import { useLocation, useHistory} from "react-router-dom";
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
-function Copyright() {
-    return (
-      <Typography variant="body2" color="textSecondary" align="center">
-        {'Copyright © '}
-        <Link color="inherit" href="#">
-          InisaShop
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
-    );
-  }
-  
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    right: 3,
+    top: -1,
+    backgroundColor: theme.palette.notification.main,
+    color: "#fff",
+    border: `1px solid ${theme.palette.notification.main}`,
+    paddingRight: '4.5px',
+    paddingTop: "1px"
+  },
+}))(Badge);
+
+const StyledMenu = withStyles((theme) => ({
+  paper: {
+    marginTop: "2px",
+    // marginRight: "5px",
+    border: `1px solid #ddd`,
+    borderRadius: "10px"
+  },
+}))((props) => (
+  <Menu
+    elevation={4}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'center',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'center',
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {
+    paddingTop:"10px",
+    paddingBottom: "10px",
+    fontSize: '0.9rem',
+    '&:focus': {
+      backgroundColor: theme.palette.common.white,
+    },
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.light,
+    },
+ 
+  },
+}))(MenuItem);
+
 
 const drawerWidth = 120;
 
@@ -129,15 +166,22 @@ const useStyles = makeStyles((theme) => ({
   userAvatar:
   {
     backgroundColor: "#fff",
-    borderColor: theme.palette.secondary.main,
+    borderColor: "#999",
     border: "1px solid",
-    color: theme.palette.secondary.main,
+    color: "#999",
     cursor: "pointer",
   },
 
   appBarText:{
     color: "#888",
-    cursor: "pointer",
+    [theme.breakpoints.down('sm')]: {
+      display: "none",
+    },
+  },
+
+  appBarNotificationIcon:{
+    color: "#888",
+    cursor: "pointer"
   }
 }));
 
@@ -147,6 +191,14 @@ export default function Dashboard() {
   const [open, setOpen] = React.useState(isMobile ? false : true);
 
   const [currentMenuIndex, setCurrentMenuIndex] = React.useState(0);
+
+  const [anchorUserAvatar, setAnchorUserAvatar] = React.useState(null);
+  const handleUserAvatarClick = (event) => {
+    setAnchorUserAvatar(event.currentTarget);
+  };
+  const handleUserAvatarClose = () => {
+    setAnchorUserAvatar(null);
+  };
 
   const history = useHistory();
 
@@ -180,7 +232,7 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  
 
   const handleLogout = () =>
   {
@@ -190,6 +242,20 @@ export default function Dashboard() {
     history.replace('./login');
   }
 
+  const handleProfileClicked = () =>
+  {
+    handleUserAvatarClose()
+  }
+
+  const handleMyAccountClicked = () =>
+  {
+    handleUserAvatarClose()
+  }
+  
+  const handleLogoutClicked = () =>
+  {
+    handleLogout()
+  }
 
   return (
     <div className={classes.root}>
@@ -226,19 +292,19 @@ export default function Dashboard() {
               alignItems="center"
             >
               <Grid item>
-                <Avatar className={classes.userAvatar}>
+                <Avatar className={classes.userAvatar} onClick={handleUserAvatarClick}>
                   <PersonOutlineIcon />
                 </Avatar>
               </Grid>
 
-              <Grid item>
-                <span className={classes.appBarText}>
+              <Grid item className={classes.appBarText}>
+                <span>
                   {state.userId?.forename + " " + state.userId?.surname}
                 </span>
               </Grid>
 
               <Grid item>
-                <Badge 
+                <StyledBadge 
                   badgeContent={4} 
                   color="error"
                   style={{color: "#fff"}}
@@ -247,25 +313,28 @@ export default function Dashboard() {
                     horizontal: 'left',
                   }}
                   >
-                  <NotificationsNoneIcon className={classes.appBarText} />
-                </Badge>
+                  <NotificationsNoneIcon className={classes.appBarNotificationIcon} />
+                </StyledBadge>
               </Grid>
             </Grid>
           </div>
 
-          {/* <Tooltip title="خروج">
-            <IconButton
-              edge="end"
-              color="inherit"
-              aria-label="logout"
-              onClick={handleLogout}
-              className={clsx(classes.menuButton)}
-            >
-              <ExitToAppOutlined />
-            </IconButton>
-          </Tooltip> */}
         </Toolbar>
       </AppBar>
+
+      <StyledMenu
+        id="user-avatar-menu"
+        anchorEl={anchorUserAvatar}
+        keepMounted
+        open={Boolean(anchorUserAvatar)}
+        onClose={handleUserAvatarClose}
+      >
+        <StyledMenuItem onClick={handleProfileClicked}>پروفایل من</StyledMenuItem>
+        <StyledMenuItem onClick={handleMyAccountClicked}>تنظیمات اکانت</StyledMenuItem>
+        <div style={{marginTop: "15px", paddingTop:"5px", borderTop:"1px solid #ddd"}}>
+         <StyledMenuItem onClick={handleLogoutClicked}>خروج</StyledMenuItem>
+        </div>     
+      </StyledMenu>
 
       <Drawer
         variant={isMobile ? "temporary" : "persistent"}
@@ -281,7 +350,7 @@ export default function Dashboard() {
         </div>
         <Divider />
 
-        <Menu />
+        <MyMenu />
       </Drawer>
 
       <main className={classes.content}>

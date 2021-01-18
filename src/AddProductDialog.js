@@ -38,6 +38,9 @@ import MuiAccordion from "@material-ui/core/Accordion";
 import MuiAccordionSummary from "@material-ui/core/AccordionSummary";
 import MuiAccordionDetails from "@material-ui/core/AccordionDetails";
 
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
 
 import { convertToPersian } from "./persian-numbers";
 
@@ -48,6 +51,10 @@ import { BrowserView, MobileView, isMobile } from "react-device-detect";
 import combineArrays from './CombineArrays';
 import GlobalState from "./GlobalState";
 import ProductService from "./services/ProductService";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -300,6 +307,16 @@ const AddProductDialog = ({
     setFilter("");
   };
 
+  const [openErrorAlert, setOpenErrorAlert] = React.useState(false);
+  
+  const handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenErrorAlert(false);
+  };
+
 
   const [hasDifferentPrices, setHasDifferentPrices] = React.useState(false);
   const hasDifferentPricesChanged = (event) =>
@@ -311,7 +328,11 @@ const AddProductDialog = ({
   const [productTitle, setProductTitle] = React.useState("");
   const productTitleChanged = (event) => {
     setProductTitle(event.target.value);
+    setProductTitleError(false)
   };
+
+  const [productTitleError, setProductTitleError] = React.useState(false);
+  
 
   const [productDescription, setProductDescription] = React.useState("");
   const [productDescriptionHTML, setProductDescriptionHTML] = React.useState(
@@ -325,7 +346,11 @@ const AddProductDialog = ({
   const [productPrice, setProductPrice] = React.useState("");
   const productPriceChanged = (event) => {
     setProductPrice(event.target.value);
+    setProductPriceError(false)
   };
+
+  const [productPriceError, setProductPriceError] = React.useState(false);
+
 
   const [
     productPriceAfterDiscount,
@@ -402,6 +427,8 @@ const AddProductDialog = ({
 
   const [saving, setSaving] = React.useState(false) 
 
+  const [error, setError] = React.useState(null)
+
   React.useEffect(() => {
     const loadPostImages = async () => {
       try {
@@ -445,13 +472,17 @@ const AddProductDialog = ({
     setFutureDayList(temp);
   };
 
-  const _handleClose = () => {
+  const clearForm = () => {
     setPostImages(null);
+  }
+
+  const _handleClose = () => {
+    clearForm();
     handleClose();
   };
 
   const _productSaved = (product) => {
-    _handleClose();
+    clearForm();
     productSaved(product)
   };
 
@@ -751,12 +782,34 @@ const AddProductDialog = ({
 
   }, [optionChanged])
 
+  const ValidateProduct = () =>
+  {
+    let error = false
+    if (!productTitle || productTitle.trim().length < 3)
+    {
+      error = true
+      setProductTitleError(true)
+    }
+
+    if (!productPrice || productPrice.trim().length < 4)
+    {
+      error = true
+      setProductPriceError(true)
+    }
+
+    return !error
+  }
+
 
   const submitForm = () =>
   {
+    if (!ValidateProduct())
+    {
+      return
+    }
 
       const product = {
-          shopId: state.shopId,
+          shopId: post.shopId,
           postId: post.id,
           title: productTitle.trim(),
           variant: JSON.stringify(variantPrices),
@@ -778,15 +831,19 @@ const AddProductDialog = ({
 
       ProductService.addProduct(product).then( (res) => {
           setSaving(false)
-          console.log(res);
           if (res.data.status === 'OK')
           {
-              _productSaved(product)
+              _productSaved(res.data.result)
+
+          }else{
+               setError(res.data.error) 
+               setOpenErrorAlert(true)            
           }
 
       }).catch(err => {
           console.error(err)
           setSaving(false)
+          setError("مشکلی در سیستم بوجود آمده است، لطفا دوباره تلاش کنید") 
       })
 
   }
@@ -848,7 +905,7 @@ const buildDeliveryTime = () =>
                 </Typography>
                 <Button
                   variant="contained"
-                  style={{color:"#fff"}}
+                  style={{ color: "#fff" }}
                   color="secondary"
                   onClick={saveClicked}
                 >
@@ -875,11 +932,17 @@ const buildDeliveryTime = () =>
 
               <div className={classes.CaptionBox}>
                 <Paper elevation={8} className={classes.paper}>
-                  <div style={{width:"100%", lineHeight:"2rem",  overflowWrap:"break-word"}}> 
+                  <div
+                    style={{
+                      width: "100%",
+                      lineHeight: "2rem",
+                      overflowWrap: "break-word",
+                    }}
+                  >
                     {post.caption.length > 0
                       ? post.caption
                       : "متنی برای این پست وجود ندارد"}
-                  </div>            
+                  </div>
                 </Paper>
               </div>
 
@@ -933,7 +996,7 @@ const buildDeliveryTime = () =>
                           >
                             <Grid item xs={12}>
                               <TextField
-                                error={false}
+                                error={productTitleError}
                                 required
                                 id="product-title"
                                 label="نام محصول"
@@ -988,6 +1051,7 @@ const buildDeliveryTime = () =>
                           >
                             <Grid item xs={12}>
                               <TextField
+                                error={productPriceError}
                                 label="قیمت ( بر حسب تومان )"
                                 value={productPrice}
                                 fullWidth
@@ -1305,17 +1369,16 @@ const buildDeliveryTime = () =>
                               <Typography className={classes.heading}>
                                 رنگ
                               </Typography>
-                            
-                            {
-                                productColors.map( (tag,index) => (
-                                    <span className={classes.variantLabels}>
-                                        {index === 0 ? '( ' : ''}
-                                         {tag}
-                                         {index === (productColors.length - 1) ? ' )' : ' , '} 
-                                    </span>
-                                ))
-                            }
 
+                              {productColors.map((tag, index) => (
+                                <span className={classes.variantLabels}>
+                                  {index === 0 ? "( " : ""}
+                                  {tag}
+                                  {index === productColors.length - 1
+                                    ? " )"
+                                    : " , "}
+                                </span>
+                              ))}
                             </AccordionSummary>
                             <AccordionDetails>
                               <Grid
@@ -1426,15 +1489,15 @@ const buildDeliveryTime = () =>
                                 سایز
                               </Typography>
 
-                              {
-                                productSizes.map( (tag,index) => (
-                                    <span className={classes.variantLabels}>
-                                        {index === 0 ? '( ' : ''}
-                                         {tag}
-                                         {index === (productSizes.length - 1) ? ' )' : ' , '} 
-                                    </span>
-                                ))
-                            }
+                              {productSizes.map((tag, index) => (
+                                <span className={classes.variantLabels}>
+                                  {index === 0 ? "( " : ""}
+                                  {tag}
+                                  {index === productSizes.length - 1
+                                    ? " )"
+                                    : " , "}
+                                </span>
+                              ))}
                             </AccordionSummary>
                             <AccordionDetails>
                               <Grid
@@ -1544,15 +1607,15 @@ const buildDeliveryTime = () =>
                               <Typography className={classes.heading}>
                                 جنس
                               </Typography>
-                              {
-                                productMaterials.map( (tag,index) => (
-                                    <span  className={classes.variantLabels}>
-                                        {index === 0 ? '( ' : ''}
-                                         {tag}
-                                         {index === (productMaterials.length - 1) ? ' )' : ' , '} 
-                                    </span>
-                                ))
-                              }
+                              {productMaterials.map((tag, index) => (
+                                <span className={classes.variantLabels}>
+                                  {index === 0 ? "( " : ""}
+                                  {tag}
+                                  {index === productMaterials.length - 1
+                                    ? " )"
+                                    : " , "}
+                                </span>
+                              ))}
                             </AccordionSummary>
                             <AccordionDetails>
                               <Grid
@@ -1667,15 +1730,15 @@ const buildDeliveryTime = () =>
                                 مدل
                               </Typography>
 
-                              {
-                                productModels.map( (tag,index) => (
-                                    <span className={classes.variantLabels}>
-                                        {index === 0 ? '( ' : ''}
-                                         {tag}
-                                         {index === (productModels.length - 1) ? ' )' : ' , '} 
-                                    </span>
-                                ))
-                              }
+                              {productModels.map((tag, index) => (
+                                <span className={classes.variantLabels}>
+                                  {index === 0 ? "( " : ""}
+                                  {tag}
+                                  {index === productModels.length - 1
+                                    ? " )"
+                                    : " , "}
+                                </span>
+                              ))}
                             </AccordionSummary>
                             <AccordionDetails>
                               <Grid
@@ -1774,141 +1837,191 @@ const buildDeliveryTime = () =>
                             </AccordionDetails>
                           </Accordion>
                         </div>
-                        
-                        <div style={{width:"100%", paddingRight:"20px",paddingBottom:"20px"}} >
-                            <FormControlLabel
-                                disabled = {!variantPrices || variantPrices.length < 2}
-                                control={
-                                <Checkbox
-                                    color="secondary"
-                                    name="has-different-prices"
-                                    checked={hasDifferentPrices}
-                                    onChange={hasDifferentPricesChanged}
-                                />
-                                }
-                                label={
-                                <span style={{ fontSize: "0.8rem" }}>
-                                    {`قیمت گذاری و انبارگردانی بر اساس ویژگی های محصول`}
-                                </span>
-                                }
-                            />
+
+                        <div
+                          style={{
+                            width: "100%",
+                            paddingRight: "20px",
+                            paddingBottom: "20px",
+                          }}
+                        >
+                          <FormControlLabel
+                            disabled={
+                              !variantPrices || variantPrices.length < 2
+                            }
+                            control={
+                              <Checkbox
+                                color="secondary"
+                                name="has-different-prices"
+                                checked={hasDifferentPrices}
+                                onChange={hasDifferentPricesChanged}
+                              />
+                            }
+                            label={
+                              <span style={{ fontSize: "0.8rem" }}>
+                                {`قیمت گذاری و انبارگردانی بر اساس ویژگی های محصول`}
+                              </span>
+                            }
+                          />
                         </div>
 
-                        <div hidden={!hasDifferentPrices} style={{paddingBottom:"20px", paddingLeft:"20px", paddingRight:"20px", width:"100%"}}>
-                            <div hidden={!variantPrices || variantPrices.length < 10} style={{paddingBottom:"20px"}}>
-                                <TextField
-                                                    variant="outlined"
-                                                    style={{marginBottom : "5px"}}
-                                                    value={filter}
-                                                    onChange={filterChanged}
-                                                    margin="normal"
-                                                    size="small"
-                                                    id="filter"
-                                                    label="فیلتر"
-                                                    name="filter"
-                                                    helperText="برای اینکه ردیف های مورد نظر خود را راحت تر پیدا کنید واژه مورد نظر خود را در کادر بالا تایپ نمائید"
-                                                    autoComplete="off"
-                                                    InputProps={{
-                                                        endAdornment : 
-                                                            <InputAdornment position="end">
-                                                                <Tooltip title="پاک کردن فیلتر">
-                                                                            <IconButton
-                                                                            aria-label="remove filter"
-                                                                            onClick={() => removeFilter()}
-                                                                            onMouseDown={() => removeFilter()}
-                                                                        >
-                                                                            <CloseIcon/>
-                                                                        </IconButton>
-                                                                </Tooltip>
-                                                            
-                                                            </InputAdornment>
-                                                          
-                                                    }}
-                                                   
-                                                />
-                            </div>
+                        <div
+                          hidden={!hasDifferentPrices}
+                          style={{
+                            paddingBottom: "20px",
+                            paddingLeft: "20px",
+                            paddingRight: "20px",
+                            width: "100%",
+                          }}
+                        >
+                          <div
+                            hidden={!variantPrices || variantPrices.length < 10}
+                            style={{ paddingBottom: "20px" }}
+                          >
+                            <TextField
+                              variant="outlined"
+                              style={{ marginBottom: "5px" }}
+                              value={filter}
+                              onChange={filterChanged}
+                              margin="normal"
+                              size="small"
+                              id="filter"
+                              label="فیلتر"
+                              name="filter"
+                              helperText="برای اینکه ردیف های مورد نظر خود را راحت تر پیدا کنید واژه مورد نظر خود را در کادر بالا تایپ نمائید"
+                              autoComplete="off"
+                              InputProps={{
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <Tooltip title="پاک کردن فیلتر">
+                                      <IconButton
+                                        aria-label="remove filter"
+                                        onClick={() => removeFilter()}
+                                        onMouseDown={() => removeFilter()}
+                                      >
+                                        <CloseIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </InputAdornment>
+                                ),
+                              }}
+                            />
+                          </div>
 
-                            <Grid
+                          <Grid
                             container
                             direction="column"
                             justify="flex-start"
                             alignItems="stretch"
-                            spacing = {1}
-                            >
-                                {variantPrices.map((variant, index) => {
+                            spacing={1}
+                          >
+                            {variantPrices.map((variant, index) => {
+                              if (
+                                variantPrices &&
+                                variantPrices.length > 1 &&
+                                (!filter ||
+                                  filter.trim().length < 1 ||
+                                  variantPrices?.length < 10 ||
+                                  bundleToString(variant.bundle).indexOf(
+                                    filter.trim()
+                                  ) >= 0)
+                              ) {
+                                return (
+                                  <Grid item>
+                                    <div
+                                      style={{
+                                        padding: "20px",
+                                        width: "100%",
+                                        borderTop: "1px solid #ddd",
+                                      }}
+                                    >
+                                      <Grid
+                                        container
+                                        direction="row"
+                                        justify="flex-start"
+                                        alignItems="center"
+                                        spacing={2}
+                                      >
+                                        <Grid item xs={12}>
+                                          {getHighlightedText(
+                                            bundleToString(variant.bundle),
+                                            filter.trim()
+                                          )}
+                                        </Grid>
 
-                                        if ( (variantPrices && variantPrices.length > 1) && (!filter || filter.trim().length < 1 || variantPrices?.length < 10 || bundleToString(variant.bundle).indexOf(filter.trim()) >= 0) )
-                                        {
-                                            return (
-                                                
+                                        <Grid item>
+                                          <TextField
+                                            label="قیمت ( بر حسب تومان )"
+                                            value={getProductVariantPrice(
+                                              index
+                                            )}
+                                            size="small"
+                                            variant="outlined"
+                                            required
+                                            onChange={(event) =>
+                                              setProductVariantPrice(
+                                                index,
+                                                event.target.value
+                                              )
+                                            }
+                                            // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
+                                            name={`product-price-${index}`}
+                                            id={`product-price-id-${index}`}
+                                            InputProps={{
+                                              inputComponent: NumberFormatCustom,
+                                            }}
+                                          />
+                                        </Grid>
+                                        <Grid item>
+                                          <TextField
+                                            label="قیمت بعد از تخفیف"
+                                            value={getProductVariantPriceAfterDiscount(
+                                              index
+                                            )}
+                                            size="small"
+                                            fullWidth
+                                            variant="outlined"
+                                            onChange={(event) =>
+                                              setProductVariantPriceAfterDiscount(
+                                                index,
+                                                event.target.value
+                                              )
+                                            }
+                                            // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
+                                            name={`product-price-after-discount-${index}`}
+                                            id={`product-price-after-discount-id-${index}`}
+                                            InputProps={{
+                                              inputComponent: NumberFormatCustom,
+                                            }}
+                                          />
+                                        </Grid>
+                                        {trackQuantity && (
+                                          <Grid item>
+                                            <TextField
+                                              label="موجودی"
+                                              value={getProductVariantInStock(
+                                                index
+                                              )}
+                                              size="small"
+                                              fullWidth
+                                              variant="outlined"
+                                              onChange={(event) =>
+                                                setProductVariantInStock(
+                                                  index,
+                                                  event.target.value
+                                                )
+                                              }
+                                              // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
+                                              name={`product-instock-discount-${index}`}
+                                              id={`product-instock-id-${index}`}
+                                              InputProps={{
+                                                inputComponent: NumberFormatCustom,
+                                              }}
+                                            />
+                                          </Grid>
+                                        )}
 
-                                                    <Grid item>
-                                                        <div style={{padding:"20px", width:"100%", borderTop:"1px solid #ddd"}}>
-                                                            <Grid
-                                                                container
-                                                                direction="row"
-                                                                justify="flex-start"
-                                                                alignItems="center"
-                                                                spacing={2}
-                                                            >
-                                                                <Grid item xs={12}>
-                                                                    {getHighlightedText(bundleToString(variant.bundle), filter.trim())}
-                                                                </Grid>
-
-                                                                <Grid item>
-                                                                    <TextField
-                                                                            label="قیمت ( بر حسب تومان )"
-                                                                            value={getProductVariantPrice(index)}
-                                                                            size= "small"
-                                                                            variant="outlined"
-                                                                            required
-                                                                            onChange={(event) => setProductVariantPrice(index, event.target.value)}
-                                                                           // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
-                                                                            name={`product-price-${index}`}
-                                                                            id={`product-price-id-${index}`}
-                                                                            InputProps={{
-                                                                            inputComponent: NumberFormatCustom,
-                                                                            }}
-                                                                        />
-                                                                </Grid>
-                                                                <Grid item>
-                                                                    <TextField
-                                                                            label="قیمت بعد از تخفیف"
-                                                                            value={getProductVariantPriceAfterDiscount(index)}
-                                                                            size= "small"
-                                                                            fullWidth
-                                                                            variant="outlined"
-                                                                            
-                                                                            onChange={(event) => setProductVariantPriceAfterDiscount(index, event.target.value)}
-                                                                           // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
-                                                                            name={`product-price-after-discount-${index}`}
-                                                                            id={`product-price-after-discount-id-${index}`}
-                                                                            InputProps={{
-                                                                            inputComponent: NumberFormatCustom,
-                                                                            }}
-                                                                        />
-                                                                </Grid>
-                                                                {trackQuantity && (
-                                                                    <Grid item>
-                                                                    <TextField
-                                                                            label="موجودی"
-                                                                            value={getProductVariantInStock(index)}
-                                                                            size= "small"
-                                                                            fullWidth
-                                                                            variant="outlined"
-                                                                            
-                                                                            onChange={(event) => setProductVariantInStock(index, event.target.value)}
-                                                                           // helperText="برای وارد کردن قیمت لطفا کیبورد خود را به حالت اتگلیسی تغییر دهید"
-                                                                            name={`product-instock-discount-${index}`}
-                                                                            id={`product-instock-id-${index}`}
-                                                                            InputProps={{
-                                                                            inputComponent: NumberFormatCustom,
-                                                                            }}
-                                                                        />
-                                                                      </Grid>
-                                                                )}
-
-                                                                {/* <Grid item xs={1} style={{ paddingTop: "0px" }}>
+                                        {/* <Grid item xs={1} style={{ paddingTop: "0px" }}>
                                                                     <Tooltip title="حذف این گزینه">
                                                                         <IconButton
                                                                         color="secondary"
@@ -1921,31 +2034,20 @@ const buildDeliveryTime = () =>
                                                                     </IconButton>
                                                                 </Tooltip>
                                                                 </Grid> */}
-                                                                
-
-                                                            </Grid>                                                          
-                                                        </div>
-                                                    </Grid>
-
-
-                                                 
-                                            )
-                                        }
-                                        else
-                                        {
-                                            return null
-                                        }
-                                })}
-
-                           </Grid> 
-
-
+                                      </Grid>
+                                    </div>
+                                  </Grid>
+                                );
+                              } else {
+                                return null;
+                              }
+                            })}
+                          </Grid>
                         </div>
-
                       </Paper>
                     </Grid>
 
-                    <Grid item style={{width: "100%"}}>
+                    <Grid item style={{ width: "100%" }}>
                       <Paper elevation={8} className={classes.form}>
                         <Paper elevation={0} className={classes.appBarProduct}>
                           <Toolbar>
@@ -2046,15 +2148,16 @@ const buildDeliveryTime = () =>
               </Grid>
             </div>
 
-            <Backdrop
-                className={classes.backdrop}
-                open={saving}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
+            <Backdrop className={classes.backdrop} open={saving}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </Dialog>
 
-           
+          <Snackbar key="error-alert"  anchorOrigin={{vertical:'bottom', horizontal:'center'}}   open={openErrorAlert} autoHideDuration={10000} onClose={handleAlertClose}>
+            <Alert style={{width:"90vw"}} onClose={handleAlertClose} severity="error">
+              {error}
+            </Alert>
+          </Snackbar>
 
         </React.Fragment>
       )}
