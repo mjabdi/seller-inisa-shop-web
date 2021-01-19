@@ -30,6 +30,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
 import clsx from "clsx";
+import ProductService from './services/ProductService';
+import { formatPrice } from './MyFormatter';
 
 
 function Alert(props) {
@@ -87,6 +89,8 @@ const useStyles = makeStyles((theme) => ({
         height: 325,
       },
 
+   
+
       card_root: {
         width: 265,
         border: "1px solid #eee",
@@ -107,6 +111,12 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         bottom: theme.spacing(4),
         right: theme.spacing(isMobile ? 1 : 5),
+      },
+      priceLabel:{
+        fontSize: "0.95rem",
+        fontWeight: "500",
+        color: theme.palette.secondary.dark,
+
       }
 }));
 
@@ -116,7 +126,7 @@ function sleep(ms) {
 
  
 
-export default function Posts() {
+export default function Products() {
   const classes = useStyles();
 
   const topRef = React.useRef(null);
@@ -160,12 +170,12 @@ export default function Posts() {
                 await sleep(200);
             }
 
-            const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor);
+            const res = await ProductService.getShopProducts(state.shopId, 36, endCursor);
             console.log(res);
             
             if (res.data.status === 'OK')
             {
-               setFeeds(res.data.posts);
+               setFeeds(res.data.products);
                setEndCursor(res.data.end_cursor);
             }    
 
@@ -199,10 +209,10 @@ export default function Posts() {
          {        
             // console.log('loadFeeds...');
             setLoadingMore(true);
-            const res = await InstaFeedService.getFeeds(state.shopId, 36, endCursor); 
+            const res = await ProductService.getShopProducts(state.shopId, 36, endCursor);
             if (res.data.status === 'OK')
             {
-               setFeeds([...feeds, ...res.data.posts]);
+               setFeeds([...feeds, ...res.data.products]);
                setEndCursor(res.data.end_cursor);
             }    
             setLoadingMore(false);
@@ -266,9 +276,8 @@ export default function Posts() {
             justify="center"
             alignItems="flex-start"
             spacing={2}
-          
           >
-            {feeds.map((post, index) => (
+            {feeds.map((product, index) => (
               <Grid
                 key={`post-${index}`}
                 item
@@ -278,33 +287,35 @@ export default function Posts() {
                 // sm={12}
                 // xs={12}
               >
-                <Card
-                   elevation={0}
-                  className={clsx(classes.card_root, {
-                    [classes.card_root_product]:
-                      post.productIds && post.productIds.length > 0,
-                  })}
-                >
+                <Card className={clsx(classes.card_root)}>
                   <CardHeader
                     action={
                       <IconButton aria-label="settings">
                         <MoreVertIcon />
                       </IconButton>
                     }
-                    subheader={
-                      <span style={{ fontSize: "0.8rem", color: "#888" }}>
-                        {" "}
-                        {new Date(post.postTimeStamp).toLocaleDateString(
-                          "fa-IR",
-                          { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-                        )}{" "}
+                    title={
+                      <span style={{ fontSize: "0.95rem", color: "#111" }}>
+                        {product.title}
                       </span>
+                    }
+                    subheader={
+                      <React.Fragment>
+                        <div style={{marginTop:"5px"}}>
+                          <span className={classes.priceLabel}>
+                            {formatPrice(product.price)}{" "}
+                          </span>
+                          <span style={{ fontSize: "0.8rem", color: "#888" }}>
+                            تومان
+                          </span>
+                        </div>
+                      </React.Fragment>
                     }
                   />
                   <CardMedia
                     className={classes.media}
-                    image={post.imageUrlSmall}
-                    title="post image"
+                    image={product.imageUrlSmall}
+                    title="Contemplative Reptile"
                   />
                   <CardContent>
                     <Typography
@@ -316,13 +327,7 @@ export default function Posts() {
                       variant="body2"
                       color="textSecondary"
                       component="p"
-                    >
-                      {showCaption
-                        ? post.caption.length > 0
-                          ? post.caption
-                          : "برای این پست متنی وجود ندارد"
-                        : ""}
-                    </Typography>
+                    ></Typography>
                   </CardContent>
 
                   <CardActions>
@@ -333,22 +338,23 @@ export default function Posts() {
                       variant="outlined"
                       size="small"
                       color="secondary"
-                      onClick={() => addProductClicked(post)}
+                      onClick={() => {
+                        console.log(product);
+                      }}
                     >
-                      تعریف محصول
+                      ویرایش محصول
                     </Button>
-
+                    {/* 
                     <IconButton
                       style={{ flexGrow: 1, cursor: "pointer" }}
                       size="small"
                       color="primary"
                       onClick={() => setShowCaption(!showCaption)}
                     >
-                      {/* <Tooltip title= {!showCaption? "مشاهده متن" : "پنهان کردن متن" }> */}
+                    
                       {!showCaption ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-
-                      {/* </Tooltip> */}
-                    </IconButton>
+                   
+                    </IconButton> */}
                   </CardActions>
                 </Card>
               </Grid>
@@ -371,7 +377,7 @@ export default function Posts() {
                 variant="outlined"
                 onClick={() => setLoadMore(true)}
               >
-                پست های بیشتر
+                محصولات بیشتر
               </Button>
             </div>
           )}
@@ -421,7 +427,7 @@ export default function Posts() {
           onClose={handleAlertClose}
           severity="success"
         >
-          محصول شما با موفقیت اضافه گردید
+          تغییرات شما با موفقیت ثبت شد
         </Alert>
       </Snackbar>
     </React.Fragment>

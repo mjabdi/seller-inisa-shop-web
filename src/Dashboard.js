@@ -14,7 +14,7 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import { Directions, ExitToAppOutlined } from '@material-ui/icons';
+import { Directions, ExitToAppOutlined, Image } from '@material-ui/icons';
 import {BrowserView, MobileView, isMobile} from 'react-device-detect';
 
 
@@ -166,9 +166,9 @@ const useStyles = makeStyles((theme) => ({
   userAvatar:
   {
     backgroundColor: "#fff",
-    borderColor: "#999",
+    borderColor: theme.palette.secondary.main,
     border: "1px solid",
-    color: "#999",
+    color: theme.palette.secondary.main,
     cursor: "pointer",
   },
 
@@ -182,6 +182,12 @@ const useStyles = makeStyles((theme) => ({
   appBarNotificationIcon:{
     color: "#888",
     cursor: "pointer"
+  },
+
+  appbarLogo:{
+    position:"absolute",
+    left:"50%",
+    marginLeft: "-40px"
   }
 }));
 
@@ -275,6 +281,10 @@ export default function Dashboard() {
           >
             <MenuIcon />
           </IconButton>
+
+          <div className={classes.appbarLogo}>
+            <img src="/images/logo_thin_only_black.png" alt="logo" width="45px" height="45px"/>
+          </div>
 
           <div
             style={{

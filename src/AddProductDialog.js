@@ -400,10 +400,10 @@ const AddProductDialog = ({
     setfutureDay(event.target.value);
   };
 
-  const [hasVariants, setHasVariants] = React.useState(false);
-  const hasVariantsChanged = (event) => {
-    setHasVariants(event.target.checked);
-  };
+  // const [hasVariants, setHasVariants] = React.useState(false);
+  // const hasVariantsChanged = (event) => {
+  //   setHasVariants(event.target.checked);
+  // };
 
   const [newColor, setNewColor] = React.useState("");
   const newColorChanged = (event) => {
@@ -474,6 +474,32 @@ const AddProductDialog = ({
 
   const clearForm = () => {
     setPostImages(null);
+    setProductTitle('')
+    setProductDescription('')
+    setProductPrice('')
+    setProductPriceAfterDiscount('')
+    setProductBarCode('')
+    setProductSKUCode('')
+    setHashTags(null)
+    setProductColors([])
+    setProductSizes([])
+    setProductMaterials([])
+    setProductModels([])
+    setProductTitleError(false)
+    setProductPriceError(false)
+    setVariantPrices([])
+    setDeliveryTimeOption('today')
+    setError(null)
+    setNewColor('')
+    setNewSize('')
+    setNewModel('')
+    setNewMaterial('')
+    setHasDifferentPrices(false)
+    setTrackQuantity(false)
+    setInStock(0)
+    setContinueSelling(false)
+    setNewHashTag('')
+    setfutureDay(1)
   }
 
   const _handleClose = () => {

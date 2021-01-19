@@ -4,6 +4,7 @@ import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 import DashboardPreview from './DashboardPreview';
 import Posts from './Posts';
+import Products from './Products';
 
 
 
@@ -25,7 +26,7 @@ export const MenuList = [
           case 1:
             return <Posts/>
           case 2:
-            return 'products'
+            return <Products/>
           default:
             return (`صفحه مورد نظر یافت نشد!`)
       }   

@@ -4,6 +4,16 @@ const persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, 
 const arabicNumbers  = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g]
 
 
+function toFarsiNumber(n) {
+  const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+  return n
+    .toString()
+    .split('')
+    .map(x => farsiDigits[x])
+    .join('');
+}
+
 
 const fixNumbers = (str) =>
 {
@@ -34,10 +44,10 @@ const convertToPersian = (number) =>
     }
   }
 
-  return numberStr
+  return numberStr.toString('utf-8')
 }
 
 module.exports = {
     fixNumbers : fixNumbers,
-    convertToPersian : convertToPersian
+    convertToPersian : toFarsiNumber,
 }
