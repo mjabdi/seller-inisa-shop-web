@@ -275,7 +275,7 @@ export default function Products() {
             direction="row-reverse"
             justify="center"
             alignItems="flex-start"
-            spacing={2}
+            spacing={4}
           >
             {feeds.map((product, index) => (
               <Grid

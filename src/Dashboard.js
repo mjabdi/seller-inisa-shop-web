@@ -83,7 +83,7 @@ const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 
-const drawerWidth = 120;
+const drawerWidth = 150;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -131,6 +131,11 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+   
+    [theme.breakpoints.down('sm')]: {
+      opacity: 0.92
+    },
+   
   },
   drawerPaperClose: {
     overflowX: 'hidden',
@@ -195,6 +200,7 @@ const useStyles = makeStyles((theme) => ({
     left:"50%",
     marginLeft: "-195px",
     paddingTop: "14px",
+    display: "none",
     [theme.breakpoints.down('sm')]: {
       display: "none",
     },
