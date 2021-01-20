@@ -188,7 +188,30 @@ const useStyles = makeStyles((theme) => ({
     position:"absolute",
     left:"50%",
     marginLeft: "-40px"
+  },
+
+  appbarLogoText:{
+    position:"absolute",
+    left:"50%",
+    marginLeft: "-195px",
+    paddingTop: "14px",
+    [theme.breakpoints.down('sm')]: {
+      display: "none",
+    },
+  },
+
+  logoBg:{
+    // backgroundColor: "blue",
+    width: "50px",
+    height: "50px",
+    border: `2px solid ${theme.palette.secondary.main}`,
+    // backgroundColor : theme.palette.notification.light,
+    borderRadius: "10px",
+    padding: "1px"
+    // paddingTop:"0px",
+    // paddingLeft:"1px"
   }
+  
 }));
 
 export default function Dashboard() {
@@ -283,7 +306,15 @@ export default function Dashboard() {
           </IconButton>
 
           <div className={classes.appbarLogo}>
-            <img src="/images/logo_thin_only_black.png" alt="logo" width="45px" height="45px"/>
+            <div className={classes.logoBg}>
+                <img src="/images/logo_thin_only_black.png" alt="logo" width="45px" height="45px"/>
+            </div>       
+          </div>
+
+          <div className={classes.appbarLogoText}>
+            <div className={classes.logoTextBg}>
+                <img src="/images/text_thin_only_black.png" alt="logo" width="150px" height="30px"/>
+            </div>       
           </div>
 
           <div
