@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   iconSelected: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.secondary.dark,
   },
 }));
 

@@ -24,12 +24,12 @@ const useStyles = makeStyles((theme) => ({
   },
   cardTitle: {
     paddingBottom: "2px",
-    color: theme.palette.secondary.main,
+    color: theme.palette.secondary.dark,
     fontSize: "1rem",
     fontWeight: "500",
   },
   cardIcon: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.secondary.dark,
     fontSize: "2rem",
   },
 }));

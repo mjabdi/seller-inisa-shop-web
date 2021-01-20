@@ -170,10 +170,10 @@ const useStyles = makeStyles((theme) => ({
 
   userAvatar:
   {
-    backgroundColor: "#fff",
-    borderColor: theme.palette.secondary.main,
+    backgroundColor: "#fafafa",
+    borderColor: "#bbb",
     border: "1px solid",
-    color: theme.palette.secondary.main,
+    color: "#bbb",
     cursor: "pointer",
   },
 
