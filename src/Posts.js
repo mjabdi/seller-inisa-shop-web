@@ -31,6 +31,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 import clsx from "clsx";
 
+import axios from 'axios';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -303,7 +304,7 @@ export default function Posts() {
                   />
                   <CardMedia
                     className={classes.media}
-                    image={post.imageUrlSmall}
+                    image={post.imageUrl}
                     title="post image"
                   />
                   <CardContent>

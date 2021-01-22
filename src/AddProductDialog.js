@@ -850,7 +850,6 @@ const AddProductDialog = ({
           barCode: productBarCode || '',
           deliveryTime: buildDeliveryTime(),
           imageUrl: post.imageUrl,
-          imageUrlSmall: post.imageUrlSmall
       }
 
       setSaving(true)
@@ -887,6 +886,17 @@ const buildDeliveryTime = () =>
         default:
             return -1        
     }
+}
+
+const getImages = (postImages) => {
+  const result = [];
+  if (postImages) {
+    postImages.forEach((post) => {
+      result.push({ original: post.imageUrl, thumbnail:  post.imageUrl });
+    });
+  }
+
+  return result;
 }
 
 
@@ -2191,15 +2201,7 @@ const buildDeliveryTime = () =>
   );
 };
 
-function getImages(postImages) {
-  const result = [];
-  if (postImages) {
-    postImages.forEach((post) => {
-      result.push({ original: post.imageUrl, thumbnail: post.imageUrlSmall });
-    });
-  }
-  return result;
-}
+
 
 function buildStringFromHashtags(hashTags)
 {

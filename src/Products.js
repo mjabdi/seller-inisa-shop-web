@@ -314,7 +314,7 @@ export default function Products() {
                   />
                   <CardMedia
                     className={classes.media}
-                    image={product.imageUrlSmall}
+                    image={product.imageUrl}
                     title="Contemplative Reptile"
                   />
                   <CardContent>
